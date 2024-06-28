@@ -1,0 +1,66 @@
+%{
+    #include <iostream>
+    using namespace std;
+    int yylex();
+    void yyerror(const char*);
+    #include "output.hpp"
+    extern int yylineno;
+    using namespace output;
+%}
+
+%token INT BYTE B BOOL  TRUE FALSE RETURN IF  WHILE BREAK CONTINUE SC LBRACE RBRACE ID NUM STRING
+%right ASSIGN
+%left OR
+%left AND
+%left equality
+%left relational
+%left additive
+%left multiplicative
+%right NOT
+%left LPAREN
+%left RPAREN
+%right ELSE
+%%
+Program: Statements {printProductionRule(1);};
+Statements: Statement{printProductionRule(2);}
+            | Statements Statement {printProductionRule(3);};
+Statement: LBRACE Statements RBRACE {printProductionRule(4);}
+            | Type ID SC {printProductionRule(5);}
+            | Type ID ASSIGN Exp SC{printProductionRule(6);}
+            | ID ASSIGN Exp SC{printProductionRule(7);}
+            | Call SC{printProductionRule(8);}
+            | RETURN SC{printProductionRule(9);}
+            | IF LPAREN Exp RPAREN Statement{printProductionRule(10);}
+            | IF LPAREN Exp RPAREN Statement ELSE Statement{printProductionRule(11);}
+            | WHILE LPAREN Exp RPAREN Statement{printProductionRule(12);}
+            | BREAK SC{printProductionRule(13);}
+            | CONTINUE SC {printProductionRule(14);};
+Call: ID LPAREN Exp RPAREN{printProductionRule(15);};
+Type: INT{printProductionRule(16);}
+      |BYTE{printProductionRule(17);}
+      |BOOL{printProductionRule(18);};
+Exp: LPAREN Exp RPAREN{printProductionRule(19);}
+    |Exp additive Exp{printProductionRule(20);}
+    |Exp multiplicative Exp{printProductionRule(20);}
+    |ID{printProductionRule(21);}
+    |Call{printProductionRule(22);}
+    |NUM{printProductionRule(23);}
+    |NUM B{printProductionRule(24);}
+    |STRING{printProductionRule(25);}
+    |TRUE{printProductionRule(26);}
+    |FALSE{printProductionRule(27);}
+    |NOT Exp{printProductionRule(28);}
+    |Exp AND Exp{printProductionRule(29);}
+    |Exp OR Exp{printProductionRule(30);}
+    |Exp equality Exp{printProductionRule(31);}
+    |Exp relational Exp{printProductionRule(31);}
+    |LPAREN Type RPAREN Exp{printProductionRule(32);};
+%%
+int main(){
+    return yyparse();
+}
+
+void yyerror(const char*){
+    errorSyn(yylineno);
+    exit(0);
+}
