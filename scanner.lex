@@ -13,15 +13,15 @@ whitespace ([\t\n\r ])
 letter ([a-zA-Z])
 
 %%
-int                                         return INT;
-byte                                        return BYTE;
-b                                           return B;
-bool                                        return BOOL;
+int                                         return INT;// {yylval= new TNode("","INT"); return INT;}
+byte                                        return BYTE;// {yylval= new TNode("","BYTE"); return BYTE;}
+b                                           return B;// {yylval= new TNode("","B"); return B;}
+bool                                        return BOOL;// {yylval= new TNode("","BOOL"); return BOOL;};
 and                                         return AND;
 or                                          return OR;
 not                                         return NOT;
-true                                        return TRUE;
-false                                       return FALSE; 
+true                                        {yylval= new BoolLex("BOOL",true); return TRUE;}
+false                                       {yylval= new BoolLex("BOOL",false); return FALSE;}
 return                                      return RETURN; 
 if                                          return IF;
 else                                        return ELSE; 
@@ -34,13 +34,13 @@ continue                                    return CONTINUE;
 \{                                          return LBRACE;
 \}                                          return RBRACE;
 =                                           return ASSIGN;
-==|!=                                       return equality;
-(<|>|<=|>=)                                   return relational;
-(\+|\-)                                         return additive;
-(\*|\/)                                         return multiplicative;
-{letter}({letter}|{digit})*                 return ID;
-({positive}{digit}*|0)                      return NUM;
-\"([^\n\r\"\\]|\\[rnt"\\])+\"               return STRING;
+==|!=                                       { yylval = new Relop("RELOP", yytext); return equality;}
+(<|>|<=|>=)                                 { yylval = new Relop("RELOP", yytext); return relational;}
+(\+|\-)                                     { yylval = new Binop("BINOP", yytext); return additive; }
+(\*|\/)                                     { yylval = new Binop("BINOP", yytext); return multiplicative; }
+{letter}({letter}|{digit})*                 { yylval = new ID("ID", yytext); return ID; }
+({positive}{digit}*|0)                      { yylval = new Num("NUM", stoi(yytext)); return NUM; }
+\"([^\n\r\"\\]|\\[rnt"\\])+\"               { yylval = new StringLex("STRING", yytext); return STRING; }
 \/\/[^\r\n]*[\r|\n|\r\n]?                    ;
 {whitespace}                                 ;
 .                                           {errorLex(yylineno); exit(0);}
