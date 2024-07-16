@@ -36,12 +36,6 @@ public:
     StringLex(const std::string &type, const std::string& s) : TNode(type), s(s) {}
 };
 
-class NamesLex : public TNode {
-public:
-    std::vector<std::string> names;
-    NamesLex(const std::string &type, const std::vector<std::string>& names) : TNode(type), names(names) {}
-};
-
 class Binop : public TNode {
 public:
     std::string op;
@@ -53,6 +47,7 @@ public:
     std::string op;
     Relop(const std::string &type, const std::string &op) : TNode(type), op(op) {}
 };
+
 
 #define YYSTYPE TNode*
 

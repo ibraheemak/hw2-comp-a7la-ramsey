@@ -1,14 +1,19 @@
 %{
     #include <iostream>
+    #include <string>
+    #include "SymbolTable.hpp"
+    #include "source.hpp"
     using namespace std;
     int yylex();
     void yyerror(const char*);
     #include "output.hpp"
     extern int yylineno;
     using namespace output;
+
+    SymbolTable symbolTable;
 %}
 
-%token INT BYTE B BOOL  TRUE FALSE RETURN IF  WHILE BREAK CONTINUE SC LBRACE RBRACE ID NUM STRING
+%token INT BYTE B BOOL TRUE FALSE RETURN IF WHILE BREAK CONTINUE SC LBRACE RBRACE ID NUM STRING
 %right ASSIGN
 %left OR
 %left AND
@@ -20,47 +25,182 @@
 %left LPAREN
 %left RPAREN
 %right ELSE
+
+%type <tNode> Program Statements Statement Type Call Exp
+
 %%
-Program: Statements {printProductionRule(1);};
-Statements: Statement{printProductionRule(2);}
-            | Statements Statement {printProductionRule(3);};
-Statement: LBRACE Statements RBRACE {printProductionRule(4);}
-            | Type ID SC {printProductionRule(5);}
-            | Type ID ASSIGN Exp SC{printProductionRule(6);}
-            | ID ASSIGN Exp SC{printProductionRule(7);}
-            | Call SC{printProductionRule(8);}
-            | RETURN SC{printProductionRule(9);}
-            | IF LPAREN Exp RPAREN Statement{printProductionRule(10);}
-            | IF LPAREN Exp RPAREN Statement ELSE Statement{printProductionRule(11);}
-            | WHILE LPAREN Exp RPAREN Statement{printProductionRule(12);}
-            | BREAK SC{printProductionRule(13);}
-            | CONTINUE SC {printProductionRule(14);};
-Call: ID LPAREN Exp RPAREN{printProductionRule(15);};
-Type: INT{printProductionRule(16);}
-      |BYTE{printProductionRule(17);}
-      |BOOL{printProductionRule(18);};
-Exp: LPAREN Exp RPAREN{printProductionRule(19);}
-    |Exp additive Exp{printProductionRule(20);}
-    |Exp multiplicative Exp{printProductionRule(20);}
-    |ID{printProductionRule(21);}
-    |Call{printProductionRule(22);}
-    |NUM{printProductionRule(23);}
-    |NUM B{printProductionRule(24);}
-    |STRING{printProductionRule(25);}
-    |TRUE{printProductionRule(26);}
-    |FALSE{printProductionRule(27);}
-    |NOT Exp{printProductionRule(28);}
-    |Exp AND Exp{printProductionRule(29);}
-    |Exp OR Exp{printProductionRule(30);}
-    |Exp equality Exp{printProductionRule(31);}
-    |Exp relational Exp{printProductionRule(31);}
-    |LPAREN Type RPAREN Exp{printProductionRule(32);};
+
+Program: { symbolTable.enterScope(); } Statements { symbolTable.exitScope(); printProductionRule(1); };
+
+Statements: Statement { printProductionRule(2); }
+          | Statements Statement { printProductionRule(3); };
+
+Statement: LBRACE { symbolTable.enterScope(); } Statements RBRACE { symbolTable.exitScope(); printProductionRule(4); }
+         | Type ID SC {
+             if (!symbolTable.addSymbol($2->id, $1->type)) {
+                 errorDef(yylineno, $2->id);
+             }
+             printProductionRule(5);
+         }
+         | Type ID ASSIGN Exp SC {
+             if (!symbolTable.addSymbol($2->id, $1->type)) {
+                 errorDef(yylineno, $2->id);
+             }
+             if (!symbolTable.isValidAssignment($1->type, $4->type)) {
+                 errorMismatch(yylineno);
+             }
+             printProductionRule(6);
+         }
+         | ID ASSIGN Exp SC {
+             if (!symbolTable.isVariableDefined($1->id)) {
+                 errorUndef(yylineno, $1->id);
+             }
+             std::string idType = symbolTable.getSymbolType($1->id);
+             if (!symbolTable.isValidAssignment(idType, $3->type)) {
+                 errorMismatch(yylineno);
+             }
+             printProductionRule(7);
+         }
+         | Call SC { printProductionRule(8); }
+         | RETURN SC { printProductionRule(9); }
+         | IF LPAREN Exp RPAREN { symbolTable.enterScope(); } Statement {
+             symbolTable.exitScope();
+             if (!symbolTable.isBoolType($3->type)) {
+                 errorMismatch(yylineno);
+             }
+             printProductionRule(10);
+         }
+         | IF LPAREN Exp RPAREN { symbolTable.enterScope(); } Statement ELSE { symbolTable.exitScope(); symbolTable.enterScope(); } Statement {
+             symbolTable.exitScope();
+             if (!symbolTable.isBoolType($3->type)) {
+                 errorMismatch(yylineno);
+             }
+             printProductionRule(11);
+         }
+         | WHILE LPAREN Exp RPAREN { symbolTable.enterScope(); symbolTable.enterWhileLoop(); } Statement {
+             symbolTable.exitScope();
+             symbolTable.exitWhileLoop();
+             if (!symbolTable.isBoolType($3->type)) {
+                 errorMismatch(yylineno);
+             }
+             printProductionRule(12);
+         }
+         | BREAK SC {
+             if (!symbolTable.isInsideWhileLoop()) {
+                 errorUnexpectedBreak(yylineno);
+             }
+             printProductionRule(13);
+         }
+         | CONTINUE SC {
+             if (!symbolTable.isInsideWhileLoop()) {
+                 errorUnexpectedContinue(yylineno);
+             }
+             printProductionRule(14);
+         };
+
+Call: ID LPAREN Exp RPAREN {
+    if (!symbolTable.isFunction($1->id)) {
+        errorUndefFunc(yylineno, $1->id);
+    } else if (!symbolTable.isValidFunctionCall($1->id, $3->type)) {
+        std::vector<std::string> params = symbolTable.getFunctionParams($1->id);
+        if (!params.empty()) {
+            errorPrototypeMismatch(yylineno, $1->id, params[0]);
+        } else {
+            errorPrototypeMismatch(yylineno, $1->id, "");
+        }
+    }
+    $$ = new TNode(symbolTable.getFunctionReturnType($1->id));
+    printProductionRule(15);
+};
+
+Type: INT { $$ = new TNode("INT"); printProductionRule(16); }
+    | BYTE { $$ = new TNode("BYTE"); printProductionRule(17); }
+    | BOOL { $$ = new TNode("BOOL"); printProductionRule(18); };
+
+Exp: LPAREN Exp RPAREN { $$ = $2; printProductionRule(19); }
+   | Exp additive Exp {
+       if (!symbolTable.isNumericType($1->type) || !symbolTable.isNumericType($3->type)) {
+           errorMismatch(yylineno);
+       }
+       $$ = new TNode(symbolTable.getLargerType($1->type, $3->type));
+       printProductionRule(20);
+   }
+   | Exp multiplicative Exp {
+       if (!symbolTable.isNumericType($1->type) || !symbolTable.isNumericType($3->type)) {
+           errorMismatch(yylineno);
+       }
+       $$ = new TNode(symbolTable.getLargerType($1->type, $3->type));
+       printProductionRule(20);
+   }
+   | ID {
+       if (!symbolTable.isVariableDefined($1->id)) {
+           errorUndef(yylineno, $1->id);
+       }
+       $$ = new TNode(symbolTable.getSymbolType($1->id));
+       printProductionRule(21);
+   }
+   | Call { $$ = $1; printProductionRule(22); }
+   | NUM { $$ = new TNode("INT"); printProductionRule(23); }
+   | NUM B {
+    if (!symbolTable.isValidByteLiteral($1->num)) {
+        errorByteTooLarge(yylineno, $1->num);
+    }
+    $$ = new TNode("BYTE");
+    printProductionRule(24);
+    }
+   | STRING { $$ = new TNode("STRING"); printProductionRule(25); }
+   | TRUE { $$ = new TNode("BOOL"); printProductionRule(26); }
+   | FALSE { $$ = new TNode("BOOL"); printProductionRule(27); }
+   | NOT Exp {
+       if (!symbolTable.isBoolType($2->type)) {
+           errorMismatch(yylineno);
+       }
+       $$ = new TNode("BOOL");
+       printProductionRule(28);
+   }
+   | Exp AND Exp {
+       if (!symbolTable.isBoolType($1->type) || !symbolTable.isBoolType($3->type)) {
+           errorMismatch(yylineno);
+       }
+       $$ = new TNode("BOOL");
+       printProductionRule(29);
+   }
+   | Exp OR Exp {
+       if (!symbolTable.isBoolType($1->type) || !symbolTable.isBoolType($3->type)) {
+           errorMismatch(yylineno);
+       }
+       $$ = new TNode("BOOL");
+       printProductionRule(30);
+   }
+   | Exp equality Exp {
+       if (!symbolTable.isValidRelop($1->type, $3->type)) {
+           errorMismatch(yylineno);
+       }
+       $$ = new TNode("BOOL");
+       printProductionRule(31);
+   }
+   | Exp relational Exp {
+       if (!symbolTable.isValidRelop($1->type, $3->type)) {
+           errorMismatch(yylineno);
+       }
+       $$ = new TNode("BOOL");
+       printProductionRule(31);
+   }
+   | LPAREN Type RPAREN Exp {
+       if (!symbolTable.checkValidCast($4->type, $2->type)) {
+           errorMismatch(yylineno);
+       }
+       $$ = new TNode($2->type);
+       printProductionRule(32);
+   };
+
 %%
-int main(){
+
+int main() {
     return yyparse();
 }
 
-void yyerror(const char*){
+void yyerror(const char* message) {
     errorSyn(yylineno);
     exit(0);
 }

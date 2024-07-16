@@ -21,14 +21,6 @@ private:
     int whileLoopCount;
 
 public:
-    bool isVariableDefined(const std::string& name) {
-    return findSymbol(name) != nullptr;
-}
-    std::vector<std::string> getFunctionParams(const std::string& funcName) {
-        Symbol* sym = findSymbol(funcName);
-        return (sym && sym->isFunction) ? sym->params : std::vector<std::string>();
-    }
-
     SymbolTable() : whileLoopCount(0) {
         enterScope();  // Start with global scope
         // Add library functions in the specified order
@@ -87,6 +79,10 @@ public:
         return tables.back().find(name) != tables.back().end();
     }
 
+    bool isVariableDefined(const std::string& name) {
+        return findSymbol(name) != nullptr;
+    }
+
     bool isFunction(const std::string& name) {
         Symbol* sym = findSymbol(name);
         return sym && sym->isFunction;
@@ -95,6 +91,11 @@ public:
     std::string getSymbolType(const std::string& name) {
         Symbol* sym = findSymbol(name);
         return sym ? sym->type : "";
+    }
+
+    std::vector<std::string> getFunctionParams(const std::string& funcName) {
+        Symbol* sym = findSymbol(funcName);
+        return (sym && sym->isFunction) ? sym->params : std::vector<std::string>();
     }
 
     int getCurrentOffset() {
@@ -152,6 +153,7 @@ public:
         if (funcName == "readi") return argType.empty();
         return false;  // FanC only has library functions
     }
+
     std::string getFunctionReturnType(const std::string& funcName) {
         Symbol* sym = findSymbol(funcName);
         if (!sym || !sym->isFunction) return "";
@@ -165,11 +167,6 @@ public:
 
     bool isValidLogicalOp(const std::string& type1, const std::string& type2) {
         return isBoolType(type1) && isBoolType(type2);
-    }
-
-    bool isValidReturnStatement() {
-        // FanC doesn't require return statements, so always valid
-        return true;
     }
 };
 
