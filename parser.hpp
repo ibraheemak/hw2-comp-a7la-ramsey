@@ -48,7 +48,14 @@ public:
     Relop(const std::string &type, const std::string &op) : TNode(type), op(op) {}
 };
 
+class ExpNode : public TNode {
+public:
+    ExpNode(const std::string &type) : TNode(type) {}
+};
 
+class StmtNode : public TNode {
+public:
+    StmtNode(const std::string &type) : TNode(type) {}
+};
 #define YYSTYPE TNode*
-
 #endif // HW3_TYPE_HPP
