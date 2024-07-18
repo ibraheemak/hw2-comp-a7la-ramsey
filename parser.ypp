@@ -1,145 +1,66 @@
 %{
-#include "parser.hpp"
-#include "auxFunctions.h"
-#include <iostream>
-#include <stdlib.h>
-
-using namespace std;
-
-extern int yylex();
-int yyerror(const char * message);
-
+    #include <iostream>
+    using namespace std;
+    int yylex();
+    void yyerror(const char*);
+    #include "output.hpp"
+    extern int yylineno;
+    using namespace output;
 %}
 
-%union{
-    int num;
-    char* id;
-    char* str;
-}
-
-%token INT BYTE B BOOL
-%token TRUE FALSE
-%token RETURN IF ELSE
-%token WHILE BREAK CONTINUE
-%token SC COMMA
-%token LPAREN RPAREN LBRACE RBRACE
-%token ASSIGN
-%token RELOP BINOP
-%token AND OR NOT
-%token <id> ID
-%token <num> NUM
-%token <str> STRING
-
+%token INT BYTE B BOOL  TRUE FALSE RETURN IF  WHILE BREAK CONTINUE SC LBRACE RBRACE ID NUM STRING
 %right ASSIGN
 %left OR
 %left AND
-%nonassoc RELOP
-%left BINOP
+%left equality
+%left relational
+%left additive
+%left multiplicative
 %right NOT
-%left LPAREN RPAREN
+%left LPAREN
+%left RPAREN
 %right ELSE
-
-%type <str> Type
-%type <str> Exp
-%type <str> Call
-
 %%
-
-Program : Statements                    { exit_scope(); }
-        ;
-
-Statements : Statement
-           | Statements Statement
-           ;
-
-Statement : LBRACE NewScope Statements RBRACE    { exit_scope(); }
-          | Type ID SC                           { add_variable($2, $1, yylineno); }
-          | Type ID ASSIGN Exp SC                {
-                add_variable($2, $1, yylineno);
-                check_valid_assignment($1, $4, yylineno);
-            }
-          | ID ASSIGN Exp SC                     {
-                const char* type = get_variable_type($1, yylineno);
-                check_valid_assignment(type, $3, yylineno);
-            }
-          | Call SC
-          | RETURN SC
-          | IF LPAREN Exp RPAREN NewScope Statement
-          | IF LPAREN Exp RPAREN NewScope Statement ELSE NewScope Statement
-          | WHILE LPAREN Exp RPAREN { enter_while_loop(); } NewScope Statement   { exit_while_loop(); }
-          | BREAK SC                             { check_while_scope(yylineno); }
-          | CONTINUE SC                          { check_while_scope(yylineno); }
-        ;
-
-Call : ID LPAREN Exp RPAREN                      {
-            check_defined_function($1, yylineno);
-            const char* returnType = get_function_return_type($1, yylineno);
-            std::vector<std::string> params = symbolTable.getFunctionParams($1);
-            if (!params.empty()) {
-                check_valid_assignment(params[0].c_str(), $3, yylineno);
-            }
-            $$ = strdup(returnType);
-        }
-    ;
-
-Type : INT   { $$ = strdup("INT"); }
-     | BYTE  { $$ = strdup("BYTE"); }
-     | BOOL  { $$ = strdup("BOOL"); }
-     ;
-
-Exp : LPAREN Exp RPAREN                  { $$ = $2; }
-    | Exp BINOP Exp                      {
-        check_numeric_type($1, yylineno);
-        check_numeric_type($3, yylineno);
-        $$ = strdup(get_larger_type($1, $3));
-    }
-    | ID                                 { $$ = strdup(get_variable_type($1, yylineno)); }
-    | Call                               { $$ = $1; }
-    | NUM                                { $$ = strdup("INT"); }
-    | NUM B                              {
-        check_byte_range($1, yylineno);
-        $$ = strdup("BYTE");
-    }
-    | STRING                             { $$ = strdup("STRING"); }
-    | TRUE                               { $$ = strdup("BOOL"); }
-    | FALSE                              { $$ = strdup("BOOL"); }
-    | NOT Exp                            {
-        check_bool_type($2, yylineno);
-        $$ = strdup("BOOL");
-    }
-    | Exp AND Exp                        {
-        check_bool_type($1, yylineno);
-        check_bool_type($3, yylineno);
-        $$ = strdup("BOOL");
-    }
-    | Exp OR Exp                         {
-        check_bool_type($1, yylineno);
-        check_bool_type($3, yylineno);
-        $$ = strdup("BOOL");
-    }
-    | Exp RELOP Exp                      {
-        check_numeric_type($1, yylineno);
-        check_numeric_type($3, yylineno);
-        $$ = strdup("BOOL");
-    }
-    | LPAREN Type RPAREN Exp             {
-        check_valid_assignment($2, $4, yylineno);
-        $$ = strdup($2);
-    }
-    ;
-
-NewScope : %empty { enter_scope(); }
-         ;
-
+Program: Statements {printProductionRule(1);};
+Statements: Statement{printProductionRule(2);}
+            | Statements Statement {printProductionRule(3);};
+Statement: LBRACE Statements RBRACE {printProductionRule(4);}
+            | Type ID SC {printProductionRule(5);}
+            | Type ID ASSIGN Exp SC{printProductionRule(6);}
+            | ID ASSIGN Exp SC{printProductionRule(7);}
+            | Call SC{printProductionRule(8);}
+            | RETURN SC{printProductionRule(9);}
+            | IF LPAREN Exp RPAREN Statement{printProductionRule(10);}
+            | IF LPAREN Exp RPAREN Statement ELSE Statement{printProductionRule(11);}
+            | WHILE LPAREN Exp RPAREN Statement{printProductionRule(12);}
+            | BREAK SC{printProductionRule(13);}
+            | CONTINUE SC {printProductionRule(14);};
+Call: ID LPAREN Exp RPAREN{printProductionRule(15);};
+Type: INT{printProductionRule(16);}
+      |BYTE{printProductionRule(17);}
+      |BOOL{printProductionRule(18);};
+Exp: LPAREN Exp RPAREN{printProductionRule(19);}
+    |Exp additive Exp{printProductionRule(20);}
+    |Exp multiplicative Exp{printProductionRule(20);}
+    |ID{printProductionRule(21);}
+    |Call{printProductionRule(22);}
+    |NUM{printProductionRule(23);}
+    |NUM B{printProductionRule(24);}
+    |STRING{printProductionRule(25);}
+    |TRUE{printProductionRule(26);}
+    |FALSE{printProductionRule(27);}
+    |NOT Exp{printProductionRule(28);}
+    |Exp AND Exp{printProductionRule(29);}
+    |Exp OR Exp{printProductionRule(30);}
+    |Exp equality Exp{printProductionRule(31);}
+    |Exp relational Exp{printProductionRule(31);}
+    |LPAREN Type RPAREN Exp{printProductionRule(32);};
 %%
-
-int main()
-{
+int main(){
     return yyparse();
 }
 
-int yyerror(const char * message)
-{
-    output::errorSyn(yylineno);
+void yyerror(const char*){
+    errorSyn(yylineno);
     exit(0);
 }

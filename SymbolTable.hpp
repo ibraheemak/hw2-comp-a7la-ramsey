@@ -3,147 +3,119 @@
 
 #include <vector>
 #include <string>
-#include <unordered_map>
-#include "output.hpp"
 
-class SymbolTable {
+using namespace std;
+
+
+// offset stack to keep track as in the tutorials - t6
+class offsetStack {
 private:
-    struct Symbol {
-        std::string name;
-        std::string type;
-        int offset;
-        bool isFunction;
-        std::vector<std::string> params;
-    };
-
-    std::vector<std::unordered_map<std::string, Symbol>> tables;
-    std::vector<int> offsets;
-    int whileLoopCount;
+    vector<int> offset_Stack;
 
 public:
-    SymbolTable() : whileLoopCount(0) {
-        enterScope();  // Start with global scope
-        // Add library functions
-        addFunction("print", "VOID", {"STRING"});
-        addFunction("printi", "VOID", {"INT"});
-        addFunction("readi", "INT", {});
+    offsetStack() : offset_Stack(1, 0) {}  // Initialize with one element set to 0
+
+    void push_offset(int x) {
+        offset_Stack.push_back(x);
     }
 
-    void enterScope() {
-        tables.push_back(std::unordered_map<std::string, Symbol>());
-        offsets.push_back(offsets.empty() ? 0 : offsets.back());
-    }
-
-    void exitScope() {
-        output::endScope();
-        for (const auto& entry : tables.back()) {
-            if (entry.second.isFunction) {
-                output::printID(entry.second.name, 0, output::makeFunctionType(entry.second.type, entry.second.params));
-            } else {
-                output::printID(entry.second.name, entry.second.offset, entry.second.type);
-            }
+    int pop_offset() {
+        if (offset_Stack.empty()) {
+            throw runtime_error("Stack is empty");
         }
-        tables.pop_back();
-        offsets.pop_back();
+        int x = offset_Stack.back();
+        offset_Stack.pop_back();
+        return x;
     }
 
-    bool addSymbol(const std::string& name, const std::string& type) {
-        if (isSymbolDefinedInCurrentScope(name)) {
-            return false;
+    int top_offset() const {
+        if (offset_Stack.empty()) {
+            throw runtime_error("Stack is empty");
         }
-        int offset = offsets.back()++;
-        tables.back()[name] = {name, type, offset, false, {}};
-        return true;
+        return offset_Stack.back();
     }
 
-    bool addFunction(const std::string& name, const std::string& returnType, const std::vector<std::string>& params) {
-        if (isSymbolDefinedInCurrentScope(name)) {
-            return false;
+    void pop_n(size_t n) {
+        if (n > offset_Stack.size()) {
+            throw runtime_error("Attempting to pop more elements than available");
         }
-        tables.back()[name] = {name, returnType, 0, true, params};
-        return true;
+        offset_Stack.resize(offset_Stack.size() - n);
     }
 
-    bool isSymbolDefined(const std::string& name) const {
-        for (auto it = tables.rbegin(); it != tables.rend(); ++it) {
-            if (it->find(name) != it->end()) {
-                return true;
-            }
-        }
-        return false;
+    bool empty() const {
+        return offset_Stack.empty();
     }
 
-    bool isSymbolDefinedInCurrentScope(const std::string& name) const {
-        return tables.back().find(name) != tables.back().end();
+    size_t size() const {
+        return offset_Stack.size();
+    }
+};
+
+
+////////////////////////////////////////
+
+/// creating a table entry that will save local variables - t6
+class tableEntry {
+public:
+    string name;
+    string type;
+    int offset;
+    tableEntry(const string& name, const string& type, int offset)
+        : name(name), type(type), offset(offset) {}
+};
+
+// scope entry for every new scope 
+class ScopeBlock {
+public:
+    vector<tableEntry*> scope;
+    ScopeBlock* parent;
+
+    ScopeBlock() : parentscope(nullptr) {}
+    ScopeBlock(ScopeBlock* parent) : parentscope(p) {}
+};
+
+
+// !! check this
+class functions : public tableEntry {
+public:
+    int numofarg;
+    vector<string> all_arg;
+    string ret_type;
+    bool isOverride;
+
+    functions(string the_name, string the_type, int the_offset, int the_num,
+              vector<string> all_the_arg, string the_ret_type, bool the_isOverride)
+        : tableEntry(the_name, the_type, the_offset), numofarg(the_num), all_arg(all_the_arg),
+          ret_type(the_ret_type), isOverride(the_isOverride) {}
+};
+
+class TablesStack {
+public:
+    vector<ScopeBlock*> stackTable;
+    ScopeBlock* ParentScope;
+
+    TablesStack() {
+        ParentScope = InsertTable(nullptr);
     }
 
-    std::string getSymbolType(const std::string& name) const {
-        for (auto it = tables.rbegin(); it != tables.rend(); ++it) {
-            auto found = it->find(name);
-            if (found != it->end()) {
-                return found->second.type;
-            }
-        }
-        return "";
+    ScopeBlock* InsertTable(ScopeBlock* parent) {
+        ScopeBlock* newScope = new ScopeBlock(parent);
+        stackTable.push_back(newScope);
+        return newScope;
     }
 
-    bool isFunction(const std::string& name) const {
-        for (auto it = tables.rbegin(); it != tables.rend(); ++it) {
-            auto found = it->find(name);
-            if (found != it->end()) {
-                return found->second.isFunction;
-            }
-        }
-        return false;
+    void insert(ScopeBlock* curScope, const string& name, const string& type, int offset) {
+        tableEntry* newEntry = new tableEntry(name, type, offset);
+        curScope->scope.push_back(newEntry);
+    }
+    // !! check this
+    void insertFunction(ScopeBlock* curScope, const string& name, const string& type, int offset,
+                        int numArgs, const vector<string>& allArgs, const string& retType, 
+                        bool isOverride = false) {
+        functions* newFunc = new functions(name, type, offset, numArgs, allArgs, retType, isOverride);
+        curScope->scope.push_back(newFunc);
     }
 
-    void enterWhileLoop() { whileLoopCount++; }
-    void exitWhileLoop() { whileLoopCount--; }
-    bool isInsideWhileLoop() const { return whileLoopCount > 0; }
-
-    bool isValidAssignment(const std::string& lhs, const std::string& rhs) const {
-        if (lhs == rhs) return true;
-        if (lhs == "INT" && rhs == "BYTE") return true;
-        return false;
-    }
-
-    bool isNumericType(const std::string& type) const {
-        return type == "INT" || type == "BYTE";
-    }
-
-    bool isBoolType(const std::string& type) const {
-        return type == "BOOL";
-    }
-
-    std::string getLargerType(const std::string& type1, const std::string& type2) const {
-        if (type1 == "INT" || type2 == "INT") return "INT";
-        return "BYTE";
-    }
-
-    bool isValidFunctionCall(const std::string& funcName, const std::string& argType) const {
-        for (auto it = tables.rbegin(); it != tables.rend(); ++it) {
-            auto found = it->find(funcName);
-            if (found != it->end() && found->second.isFunction) {
-                if (found->second.params.empty()) return false;
-                return isValidAssignment(found->second.params[0], argType);
-            }
-        }
-        return false;
-    }
-
-    std::string getFunctionReturnType(const std::string& funcName) const {
-        return getSymbolType(funcName);
-    }
-
-    std::vector<std::string> getFunctionParams(const std::string& funcName) const {
-        for (auto it = tables.rbegin(); it != tables.rend(); ++it) {
-            auto found = it->find(funcName);
-            if (found != it->end() && found->second.isFunction) {
-                return found->second.params;
-            }
-        }
-        return {};
-    }
 };
 
 #endif // SYMBOL_TABLE_HPP
