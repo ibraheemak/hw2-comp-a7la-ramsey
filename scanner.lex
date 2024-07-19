@@ -37,8 +37,8 @@ continue    return CONTINUE;
 ==|!=                          { yylval = new Relop("RELOP", yytext); return equality;}
 (<|>|<=|>=)                    { yylval = new Relop("RELOP", yytext); return relational;}
 (\+|\-)                        { yylval = new Binop("BINOP", yytext); return additive; }
-(\*|\/)                        { yylval = new Binop("BINOP", yytext); return multiplicative; }
-{letter}({letter}|{digit})*    { yylval = new ID("ID", yytext); return ID; }
+(\*|\/)                        { yylval = new Binop("BINOP", yytext); return multiplicative;}
+{letter}({letter}|{digit})*    { yylval = new IdentifierStr("ID", yytext); return ID; }
 0|[1-9]{digit}*                { yylval = new Num("NUM", stoi(yytext)); return NUM; }
 \"([^\n\r\"\\]|\\[rnt"\\])+\"  { yylval = new StringLex("STRING", yytext); return STRING; }
 \/\/[^\r\n]*[\r\n|\n]?         ; /* Ignore comments */

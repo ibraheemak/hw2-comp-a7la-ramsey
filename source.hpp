@@ -13,10 +13,10 @@ public:
     virtual ~TNode() = default;
 };
 
-class ID : public TNode {
+class IdentifierStr : public TNode {
 public:
     string id;
-    ID(const string &type, const string &id) : TNode(type), id(id) {}
+    IdentifierStr(const string &type, string id) : TNode(type), id(id) {}
 };
 
 class Num : public TNode {
