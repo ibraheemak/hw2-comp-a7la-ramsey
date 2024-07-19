@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include "hw3_output.hpp"
 
 using namespace std;
 
@@ -19,29 +20,30 @@ public:
         offset_Stack.push_back(x);
     }
 
-    int pop_offset() {
+    int pop_offset(int lineno) {
         if (offset_Stack.empty()) {
-            throw runtime_error("Stack is empty");
+            output::errorMismatch(lineno);
+            exit(0);
         }
         int x = offset_Stack.back();
         offset_Stack.pop_back();
         return x;
     }
-
-    int top_offset() const {
-        if (offset_Stack.empty()) {
-            throw runtime_error("Stack is empty");
-        }
-        return offset_Stack.back();
+    int top_offset(int lineno) const {
+    if (offset_Stack.empty()) {
+        output::errorMismatch(lineno);
+        exit(0);
     }
+    return offset_Stack.back();
+}
 
-    void pop_n(size_t n) {
+    void pop_n(size_t n, int lineno) {
         if (n > offset_Stack.size()) {
-            throw runtime_error("Attempting to pop more elements than available");
+            output::errorMismatch(lineno);
+            exit(0);
         }
         offset_Stack.resize(offset_Stack.size() - n);
     }
-
     bool empty() const {
         return offset_Stack.empty();
     }
@@ -70,8 +72,8 @@ public:
     vector<tableEntry*> scope;
     ScopeBlock* parent;
 
-    ScopeBlock() : parentscope(nullptr) {}
-    ScopeBlock(ScopeBlock* parent) : parentscope(p) {}
+    ScopeBlock() : parent(nullptr) {}
+    ScopeBlock(ScopeBlock* parent) : parent(parent) {}
 };
 
 

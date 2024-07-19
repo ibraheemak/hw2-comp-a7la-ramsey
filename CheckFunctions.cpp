@@ -2,6 +2,7 @@
 #include "source.hpp"
 #include "hw3_output.hpp"
 #include <string>
+#include <sstream>
 
 
 using namespace output;
@@ -10,7 +11,7 @@ using namespace output;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// type checking functions  ////////////////////////////////////////////
-// Helper function to get the type of an expression
+
 string getExpressionType(const ExpNode* exp) {
     if (dynamic_cast<const Num*>(exp)) {
         return "INT";
@@ -47,9 +48,9 @@ bool isBooleanType(const string& type) {
     return (type == "BOOL");
 }
 
-void checkTypeMismatch(const string& expected, const string& actual, int lineno) {
+void checkTypeMismatch(const string& expected, const string& actual, const string& name, int lineno) {
     if (!isTypeCompatible(expected, actual)) {
-        output::errorDef(lineno, name);
+        output::errorMismatch(lineno);
         exit(0);
     }
 }
@@ -57,7 +58,7 @@ void checkTypeMismatch(const string& expected, const string& actual, int lineno)
 void checkBooleanExpression(const ExpNode* exp, int lineno) {
     string type = getExpressionType(exp);
     if (!isBooleanType(type)) {
-        output::errorDef(lineno, name);
+        output::errorMismatch(lineno);  
         exit(0);
     }
 }
@@ -89,12 +90,10 @@ void checkMainFunction(TablesStack& tables) {
     }
 
     if (!mainFound) {
-        output::errorMainMissing();
+        output::errorMismatch(0);  // Using a general error, with line number 0 for global scope
         exit(0);
     }
 }
-
-
 
 ///////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////// aux funcions //////////////////////////////////////
@@ -106,9 +105,6 @@ string intToString(int value) {
     return std::to_string(value);
 }
 
-string intToString(int value) {
-    return std::to_string(value);
-}
 
 bool isLegalByteValue(int value) {
     return value >= 0 && value <= 255;
@@ -189,25 +185,39 @@ void checkContinueStatement(int loopDepth, int lineno) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////// scope and symbol table management functions /////////////////////////////
 void createNewScope(TablesStack& tableStack) {
-    ScopeBlock* newScope = new ScopeBlock(tableStack.stackTable.back());
-    tableStack.stackTable.push_back(newScope);
-    tableStack.push_offset(tableStack.top_offset());
+    ScopeBlock* newScope = tableStack.InsertTable(tableStack.stackTable.empty() ? nullptr : tableStack.stackTable.back());
+    // No need to push to stackTable as InsertTable already does this
+}
+void addSymbolToCurrentScope(TablesStack& tableStack, const string& name, const string& type, int offset) {
+    if (!tableStack.stackTable.empty()) {
+        ScopeBlock* currentScope = tableStack.stackTable.back();
+        tableStack.insert(currentScope, name, type, offset);
+    }
 }
 
 void exitScope(TablesStack& tableStack) {
     if (!tableStack.stackTable.empty()) {
         ScopeBlock* scopeToDelete = tableStack.stackTable.back();
         tableStack.stackTable.pop_back();
-        delete scopeToDelete;
-        tableStack.pop_offset();
-    }
-}
 
-void addSymbolToCurrentScope(TablesStack& tableStack, const string& name, const string& type, int offset) {
-    if (!tableStack.stackTable.empty()) {
-        ScopeBlock* currentScope = tableStack.stackTable.back();
-        tableEntry* newEntry = new tableEntry(name, type, offset);
-        currentScope->scope.push_back(newEntry);
+        // Print the symbols in the scope that's being exited
+        output::endScope();
+        for (const auto& entry : scopeToDelete->scope) {
+            if (entry->type == "function") {
+                functions* func = static_cast<functions*>(entry);
+                std::ostringstream argTypes;
+                for (size_t i = 0; i < func->all_arg.size(); ++i) {
+                    if (i > 0) argTypes << ",";
+                    argTypes << func->all_arg[i];
+                }
+                string functionType = output::makeFunctionType(argTypes.str(), func->ret_type);
+                output::printID(func->name, func->offset, functionType);
+            } else {
+                output::printID(entry->name, entry->offset, entry->type);
+            }
+        }
+
+        delete scopeToDelete;
     }
 }
 
@@ -215,9 +225,6 @@ void addFunctionToGlobalScope(TablesStack& tableStack, const string& name, const
     if (!tableStack.stackTable.empty()) {
         ScopeBlock* globalScope = tableStack.ParentScope;
         int numArgs = paramTypes.size();
-        functions* newFunc = new functions(name, "function", 0, numArgs, paramTypes, returnType, false);
-        globalScope->scope.push_back(newFunc);
+        tableStack.insertFunction(globalScope, name, "function", 0, numArgs, paramTypes, returnType);
     }
 }
-
-

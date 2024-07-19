@@ -41,10 +41,4 @@ void output::printProductionRule(const int ruleno) {
     std::cout << ruleno << ": " << output::rules[ruleno-1] << "\n";
 }
 
-void output::errorLex(const int lineno) {
-    std::cout << "line " << lineno << ": lexical error\n";
-}
 
-void output::errorSyn(const int lineno) {
-    std::cout << "line " << lineno << ": syntax error\n";
-}
