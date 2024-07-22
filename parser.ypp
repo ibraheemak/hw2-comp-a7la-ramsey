@@ -9,28 +9,43 @@
     extern int yylineno;
     using namespace output;
     int loopDepth = 0;
+    #include "source.hpp"
+    #include "CheckFunctions.h"
+    TablesStack* tableStack=new TablesStack;
+    offsetStack* offsettStack=new offsetStack;
 %}
+
+
 
 %token INT BYTE B BOOL  TRUE FALSE RETURN IF  WHILE BREAK CONTINUE SC LBRACE RBRACE ID NUM STRING
 %right ASSIGN
 %left OR
 %left AND
-%left equality
-%left relational
-%left additive
-%left multiplicative
+%left  equality
+%left  relational
+%left  additive
+%left  multiplicative
 %right NOT
 %left LPAREN
 %left RPAREN
 %right ELSE
 %token COMMA
+
+
 %%
 
 
 
 
-Program: Statements {printProductionRule(1);};
+Program: M1 Statements {checkMainFunction(*tableStack);exitScope(*tableStack);};
 
+M1: {     vector<string> printParmType={"string"};
+        addFunctionToGlobalScope(*tableStack,"print","void",printParmType);
+          vector<string> printiParmType={"int"};
+        addFunctionToGlobalScope(*tableStack,"printi","void",printiParmType);
+          vector<string> readiParmType={"int"};
+        addFunctionToGlobalScope(*tableStack,"readi","int",readiParmType);
+        };
 
 
 Statements: Statement{printProductionRule(2);}
@@ -39,8 +54,20 @@ Statements: Statement{printProductionRule(2);}
 
 
 Statement: LBRACE Statements RBRACE {printProductionRule(4);}
-            | Type ID SC {printProductionRule(5);}
-            | Type ID ASSIGN Exp SC{printProductionRule(6);}
+            | Type ID SC {checkVariableDeclaration(*tableStack,static_cast<IdentifierStr*>($2)->id,yylineno);
+                          addSymbolToCurrentScope(*tableStack,static_cast<IdentifierStr*>($2)->id,static_cast<TNode*>($1)->type,offsettStack->top_offset(yylineno));
+                          offsettStack->update_top_offset();
+                          delete static_cast<IdentifierStr*>($2);
+                          delete static_cast<TNode*>($1);
+                          }   /////////////////////////
+            | Type ID ASSIGN Exp SC{checkVariableDeclaration(*tableStack,static_cast<IdentifierStr*>($2)->id,yylineno);
+                                    checkAssignment(static_cast<TNode*>($1)->type, static_cast<TNode*>($4)->type, yylineno);
+                                    addSymbolToCurrentScope(*tableStack,static_cast<IdentifierStr*>($2)->id,static_cast<TNode*>($1)->type,offsettStack->top_offset(yylineno));
+                                    offsettStack->update_top_offset();
+                                    delete static_cast<IdentifierStr*>($2);
+                                    delete static_cast<TNode*>($1);
+                                    delete static_cast<TNode*>($4);
+                                     } /////////////////////////////
             | ID ASSIGN Exp SC{printProductionRule(7);}
             | Call SC{printProductionRule(8);}
             | RETURN SC{printProductionRule(9);}
@@ -56,9 +83,9 @@ Call: ID LPAREN Exp RPAREN{printProductionRule(15);};
 
 
 
-Type:       INT{$$=$1;}
-      |     BYTE{$$=$1;}
-      |     BOOL{$$=$1;};
+Type: INT { $$=new TNode("int");}
+    | BYTE { $$=new TNode("byte");}
+    | BOOL { $$=new TNode("bool");};
 
 
 
