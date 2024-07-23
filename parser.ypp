@@ -37,50 +37,172 @@
 
 
 
-Program: M1 Statements {checkMainFunction(*tableStack);exitScope(*tableStack);};
+Program: M1 Statements 
+       {
+         checkMainFunction(*tableStack);
+         exitScope(*tableStack);
+       }
+       ;
 
-M1: {     vector<string> printParmType={"string"};
-        addFunctionToGlobalScope(*tableStack,"print","void",printParmType);
-          vector<string> printiParmType={"int"};
-        addFunctionToGlobalScope(*tableStack,"printi","void",printiParmType);
-          vector<string> readiParmType={"int"};
-        addFunctionToGlobalScope(*tableStack,"readi","int",readiParmType);
-        };
+M1: %empty
+  {
+    createNewScope(*tableStack);  // Create global scope
+    offsettStack->push_offset(0);  // Initialize offset stack for global scope
 
+    vector<string> printParmType = {"string"};
+    addFunctionToGlobalScope(*tableStack, "print", "void", printParmType);
+    
+    vector<string> printiParmType = {"int"};
+    addFunctionToGlobalScope(*tableStack, "printi", "void", printiParmType);
+    
+    vector<string> readiParmType = {};  // readi takes no parameters
+    addFunctionToGlobalScope(*tableStack, "readi", "int", readiParmType);
+  }
+  ;
 
-Statements: Statement{printProductionRule(2);}
-            | Statements Statement {printProductionRule(3);};
+//////////////////////////////////////////////////////////////////////////////////
 
+Statements: Statement { printProductionRule(2); }
+          | Statements Statement { printProductionRule(3); }
+          ;
 
+Statement: LBRACE M_NEW_SCOPE Statements RBRACE 
+         {
+           printProductionRule(4);
+           exitScope(*tableStack);
+           offsettStack->pop_offset(yylineno);
+         }
+         | Type ID SC 
+         {
+           checkVariableDeclaration(*tableStack, static_cast<IdentifierStr*>($2)->id, yylineno);
+           addSymbolToCurrentScope(*tableStack, static_cast<IdentifierStr*>($2)->id, static_cast<TNode*>($1)->type, offsettStack->top_offset(yylineno));
+           offsettStack->update_top_offset();
+           delete static_cast<IdentifierStr*>($2);
+           delete static_cast<TNode*>($1);
+         }
+         | Type ID ASSIGN Exp SC
+         {
+           checkVariableDeclaration(*tableStack, static_cast<IdentifierStr*>($2)->id, yylineno);
+           checkAssignment(static_cast<TNode*>($1)->type, $4->type, yylineno);
+           addSymbolToCurrentScope(*tableStack, static_cast<IdentifierStr*>($2)->id, static_cast<TNode*>($1)->type, offsettStack->top_offset(yylineno));
+           offsettStack->update_top_offset();
+           delete static_cast<IdentifierStr*>($2);
+           delete static_cast<TNode*>($1);
+           delete $4;
+         }
+         | ID ASSIGN Exp SC
+         {
+           string idType = getSymbolType(*tableStack, static_cast<IdentifierStr*>($1)->id);
+           if (idType.empty()) {
+             output::errorUndef(yylineno, static_cast<IdentifierStr*>($1)->id);
+             exit(0);
+           }
+           checkAssignment(idType, $3->type, yylineno);
+           delete static_cast<IdentifierStr*>($1);
+           delete $3;
+         }
+         | Call SC { printProductionRule(8); }
+         | RETURN SC 
+         {
+           checkReturnStatement(*tableStack, "VOID", yylineno);
+           printProductionRule(9);
+         }
+         | IF LPAREN Exp RPAREN M_NEW_SCOPE Statement
+         {
+           checkBooleanExpression($3, *tableStack);
+           exitScope(*tableStack);
+           offsettStack->pop_offset(yylineno);
+           printProductionRule(10);
+           delete $3;
+         }
+         | IF LPAREN Exp RPAREN M_NEW_SCOPE Statement ELSE M_NEW_SCOPE Statement
+         {
+           checkBooleanExpression($3, *tableStack);
+           exitScope(*tableStack);
+           offsettStack->pop_offset(yylineno);
+           exitScope(*tableStack);
+           offsettStack->pop_offset(yylineno);
+           printProductionRule(11);
+           delete $3;
+         }
+         | WHILE LPAREN Exp RPAREN M_NEW_SCOPE_LOOP Statement
+         {
+           checkBooleanExpression($3, *tableStack);
+           exitScope(*tableStack);
+           offsettStack->pop_offset(yylineno);
+           loopDepth--;
+           printProductionRule(12);
+           delete $3;
+         }
+         | BREAK SC
+         {
+           checkBreakStatement(loopDepth, yylineno);
+           printProductionRule(13);
+         }
+         | CONTINUE SC
+         {
+           checkContinueStatement(loopDepth, yylineno);
+           printProductionRule(14);
+         }
+         ;
 
-Statement: LBRACE Statements RBRACE {printProductionRule(4);}
-            | Type ID SC {checkVariableDeclaration(*tableStack,static_cast<IdentifierStr*>($2)->id,yylineno);
-                          addSymbolToCurrentScope(*tableStack,static_cast<IdentifierStr*>($2)->id,static_cast<TNode*>($1)->type,offsettStack->top_offset(yylineno));
-                          offsettStack->update_top_offset();
-                          delete static_cast<IdentifierStr*>($2);
-                          delete static_cast<TNode*>($1);
-                          }   /////////////////////////
-            | Type ID ASSIGN Exp SC{checkVariableDeclaration(*tableStack,static_cast<IdentifierStr*>($2)->id,yylineno);
-                                    checkAssignment(static_cast<TNode*>($1)->type, static_cast<TNode*>($4)->type, yylineno);
-                                    addSymbolToCurrentScope(*tableStack,static_cast<IdentifierStr*>($2)->id,static_cast<TNode*>($1)->type,offsettStack->top_offset(yylineno));
-                                    offsettStack->update_top_offset();
-                                    delete static_cast<IdentifierStr*>($2);
-                                    delete static_cast<TNode*>($1);
-                                    delete static_cast<TNode*>($4);
-                                     } /////////////////////////////
-            | ID ASSIGN Exp SC{printProductionRule(7);}
-            | Call SC{printProductionRule(8);}
-            | RETURN SC{printProductionRule(9);}
-            | IF LPAREN Exp RPAREN Statement{printProductionRule(10);}
-            | IF LPAREN Exp RPAREN Statement ELSE Statement{printProductionRule(11);}
-            | WHILE LPAREN Exp RPAREN Statement{printProductionRule(12);}
-            | BREAK SC{printProductionRule(13);}
-            | CONTINUE SC {printProductionRule(14);};
+M_NEW_SCOPE: %empty
+           {
+             createNewScope(*tableStack);
+             offsettStack->push_offset(offsettStack->top_offset(yylineno));
+           }
+           ;
 
+M_NEW_SCOPE_LOOP: %empty
+                {
+                  createNewScope(*tableStack);
+                  offsettStack->push_offset(offsettStack->top_offset(yylineno));
+                  loopDepth++;
+                }
+                ;
+//////////////////////////////////////////////////////////////////////////////////
 
+Call: ID LPAREN Exp RPAREN
+    {
+      string funcName = static_cast<IdentifierStr*>($1)->id;
+      vector<string> argTypes = {$3->type};
+      
+      // Check if the function exists
+      tableEntry* entry = nullptr;
+      for (const auto& e : tableStack->ParentScope->scope) {
+        if (e->name == funcName) {
+          entry = e;
+          break;
+        }
+      }
+      
+      if (!entry) {
+        output::errorUndefFunc(yylineno, funcName);
+        exit(0);
+      }
 
-Call: ID LPAREN Exp RPAREN{printProductionRule(15);};
+      // Check if the entry is a function
+      functions* func = dynamic_cast<functions*>(entry);
+      if (!func) {
+        output::errorUndefFunc(yylineno, funcName);
+        exit(0);
+      }
 
+      // Check if the argument count and types match
+      if (func->numofarg != 1 || func->all_arg[0] != $3->type) {
+        output::errorPrototypeMismatch(yylineno, funcName, output::makeFunctionType(func->all_arg[0], func->ret_type));
+        exit(0);
+      }
+
+      // Create the expression node with the function's return type
+      $$ = new ExpNode(func->ret_type);
+      
+      printProductionRule(15);
+      
+      delete static_cast<IdentifierStr*>($1);
+      delete $3;
+    }
+  ;
 
 
 Type: INT { $$=new TNode("int");}
@@ -89,22 +211,100 @@ Type: INT { $$=new TNode("int");}
 
 
 
-Exp: LPAREN Exp RPAREN{printProductionRule(19);}
-    |Exp additive Exp{printProductionRule(20);}
-    |Exp multiplicative Exp{printProductionRule(20);}
-    |ID{printProductionRule(21);}
-    |Call{printProductionRule(22);}
-    |NUM{printProductionRule(23);}
-    |NUM B{printProductionRule(24);}
-    |STRING{printProductionRule(25);}
-    |TRUE{printProductionRule(26);}
-    |FALSE{printProductionRule(27);}
-    |NOT Exp{printProductionRule(28);}
-    |Exp AND Exp{printProductionRule(29);}
-    |Exp OR Exp{printProductionRule(30);}
-    |Exp equality Exp{printProductionRule(31);}
-    |Exp relational Exp{printProductionRule(31);}
-    |LPAREN Type RPAREN Exp{printProductionRule(32);};
+Exp: LPAREN Exp RPAREN { $$ = $2; }
+   | Exp additive Exp 
+     { 
+       checkNumericExpression($1, *tableStack);
+       checkNumericExpression($3, *tableStack);
+       string type1 = $1->type;
+       string type2 = $3->type;
+       $$ = new ExpNode(type1 == "INT" || type2 == "INT" ? "INT" : "BYTE");
+     }
+   | Exp multiplicative Exp 
+     { 
+       checkNumericExpression($1, *tableStack);
+       checkNumericExpression($3, *tableStack);
+       string type1 = $1->type;
+       string type2 = $3->type;
+       $$ = new ExpNode(type1 == "INT" || type2 == "INT" ? "INT" : "BYTE");
+     }
+   | ID 
+     { 
+       string type = getSymbolType(*tableStack, static_cast<IdentifierStr*>($1)->id);
+       if(type.empty()) {
+         output::errorUndef(yylineno, static_cast<IdentifierStr*>($1)->id);
+         exit(0);
+       }
+       $$ = new ExpNode(type);
+     }
+   | Call { $$ = $1; }
+   | NUM { $$ = new ExpNode("INT"); }
+   | NUM B 
+     { 
+       int value = static_cast<Num*>($1)->num;
+       if(!isLegalByteValue(value)) {
+         output::errorByteTooLarge(yylineno, to_string(value));
+         exit(0);
+       }
+       $$ = new ExpNode("BYTE");
+     }
+   | STRING { $$ = new ExpNode("STRING"); }
+   | TRUE { $$ = new ExpNode("BOOL"); }
+   | FALSE { $$ = new ExpNode("BOOL"); }
+   | NOT Exp 
+     { 
+       checkBooleanExpression($2, *tableStack);
+       $$ = new ExpNode("BOOL");
+     }
+   | Exp AND Exp 
+     { 
+       checkBooleanExpression($1, *tableStack);
+       checkBooleanExpression($3, *tableStack);
+       $$ = new ExpNode("BOOL");
+     }
+   | Exp OR Exp 
+     { 
+       checkBooleanExpression($1, *tableStack);
+       checkBooleanExpression($3, *tableStack);
+       $$ = new ExpNode("BOOL");
+     }
+   | Exp equality Exp 
+     { 
+       checkTypeMismatch($1->type, $3->type, "equality", yylineno);
+       $$ = new ExpNode("BOOL");
+     }
+   | Exp relational Exp 
+     { 
+       checkNumericExpression($1, *tableStack);
+       checkNumericExpression($3, *tableStack);
+       $$ = new ExpNode("BOOL");
+     }
+   | LPAREN Type RPAREN Exp 
+     { 
+       string targetType = static_cast<TNode*>($2)->type;
+       if(!isTypeCompatible(targetType, $4->type)) {
+         output::errorMismatch(yylineno);
+         exit(0);
+       }
+       $$ = new ExpNode(targetType);
+     }
+   ;
+    // Exp: LPAREN Exp RPAREN{printProductionRule(19);}
+    //     |Exp additive Exp{printProductionRule(20);}
+    //     |Exp multiplicative Exp{printProductionRule(20);}
+    //     |ID{printProductionRule(21);}
+    //     |Call{printProductionRule(22);}
+    //     |NUM{printProductionRule(23);}
+    //     |NUM B{printProductionRule(24);}
+    //     |STRING{printProductionRule(25);}
+    //     |TRUE{printProductionRule(26);}
+    //     |FALSE{printProductionRule(27);}
+    //     |NOT Exp{printProductionRule(28);}
+    //     |Exp AND Exp{printProductionRule(29);}
+    //     |Exp OR Exp{printProductionRule(30);}
+    //     |Exp equality Exp{printProductionRule(31);}
+    //     |Exp relational Exp{printProductionRule(31);}
+    //     |LPAREN Type RPAREN Exp{printProductionRule(32);};
 
 
 %%
