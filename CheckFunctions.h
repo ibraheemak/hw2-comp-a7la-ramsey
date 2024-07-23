@@ -11,7 +11,7 @@ void addSymbolToCurrentScope(TablesStack& tableStack, const string& name, const 
 void addFunctionToGlobalScope(TablesStack& tableStack, const string& name, const string& returnType, const vector<string>& paramTypes);
 
 // type checking functions 
-string getExpressionType(const ExpNode* exp);
+string getExpressionType(const TNode* exp, TablesStack& tables);
 bool isTypeCompatible(const string& type1, const string& type2);
 bool isNumericType(const string& type);
 bool isBooleanType(const string& type);
@@ -37,6 +37,7 @@ bool areTypesCompatible(const string& type1, const string& type2);
 void addVariableToScope(TablesStack& tables, const string& name, const string& type, int offset);
 string getSymbolType(TablesStack& tableStack, const string& name);
 bool isSymbolDefinedInCurrentScope(TablesStack& tableStack, const string& name);
+string getCurrentFunctionReturnType(TablesStack& tableStack);
 
 // main function checker
 void checkMainFunction(TablesStack& tableStack);

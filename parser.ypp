@@ -107,7 +107,6 @@ Exp: LPAREN Exp RPAREN{printProductionRule(19);}
     |LPAREN Type RPAREN Exp{printProductionRule(32);};
 
 
-
 %%
 int main(){
     return yyparse();

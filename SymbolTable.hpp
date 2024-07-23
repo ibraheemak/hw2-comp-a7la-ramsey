@@ -47,6 +47,11 @@ public:
     bool empty() const {
         return offset_Stack.empty();
     }
+    void update_top_offset() {
+        if (!offset_Stack.empty()) {
+            offset_Stack.back()++;
+        }
+    }
 
     size_t size() const {
         return offset_Stack.size();
