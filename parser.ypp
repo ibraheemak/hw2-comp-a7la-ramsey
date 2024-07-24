@@ -13,6 +13,8 @@
     #include "CheckFunctions.h"
     TablesStack* tableStack=new TablesStack;
     offsetStack* offsettStack=new offsetStack;
+    #define YYERROR_VERBOSE 1 
+    #define YYDEBUG 1
 %}
 
 
@@ -41,6 +43,7 @@ Program: M1 Statements
        {
          checkMainFunction(*tableStack);
          exitScope(*tableStack);
+         printProductionRule(1);
        }
        ;
 
@@ -55,8 +58,8 @@ M1: %empty
     vector<string> printiParmType = {"int"};
     addFunctionToGlobalScope(*tableStack, "printi", "void", printiParmType);
     
-    vector<string> readiParmType = {};  // readi takes no parameters
-    addFunctionToGlobalScope(*tableStack, "readi", "int", readiParmType);
+  vector<string> readiParmType = {};  // readi takes an int parameter
+  addFunctionToGlobalScope(*tableStack, "readi", "int", readiParmType);
   }
   ;
 
@@ -79,6 +82,7 @@ Statement: LBRACE M_NEW_SCOPE Statements RBRACE
            offsettStack->update_top_offset();
            delete static_cast<IdentifierStr*>($2);
            delete static_cast<TNode*>($1);
+           printProductionRule(5);
          }
          | Type ID ASSIGN Exp SC
          {
@@ -89,6 +93,7 @@ Statement: LBRACE M_NEW_SCOPE Statements RBRACE
            delete static_cast<IdentifierStr*>($2);
            delete static_cast<TNode*>($1);
            delete $4;
+           printProductionRule(6);
          }
          | ID ASSIGN Exp SC
          {
@@ -100,6 +105,7 @@ Statement: LBRACE M_NEW_SCOPE Statements RBRACE
            checkAssignment(idType, $3->type, yylineno);
            delete static_cast<IdentifierStr*>($1);
            delete $3;
+           printProductionRule(7);
          }
          | Call SC { printProductionRule(8); }
          | RETURN SC 
@@ -109,15 +115,24 @@ Statement: LBRACE M_NEW_SCOPE Statements RBRACE
          }
          | IF LPAREN Exp RPAREN M_NEW_SCOPE Statement
          {
-           checkBooleanExpression($3, *tableStack);
+           string expType = getExpressionType($3, *tableStack);
+           if (!isBooleanType(expType)) {
+             output::errorMismatch(yylineno);
+             exit(0);
+           }
            exitScope(*tableStack);
            offsettStack->pop_offset(yylineno);
            printProductionRule(10);
            delete $3;
+           
          }
          | IF LPAREN Exp RPAREN M_NEW_SCOPE Statement ELSE M_NEW_SCOPE Statement
          {
-           checkBooleanExpression($3, *tableStack);
+           string expType = getExpressionType($3, *tableStack);
+           if (!isBooleanType(expType)) {
+             output::errorMismatch(yylineno);
+             exit(0);
+           }
            exitScope(*tableStack);
            offsettStack->pop_offset(yylineno);
            exitScope(*tableStack);
@@ -127,7 +142,11 @@ Statement: LBRACE M_NEW_SCOPE Statements RBRACE
          }
          | WHILE LPAREN Exp RPAREN M_NEW_SCOPE_LOOP Statement
          {
-           checkBooleanExpression($3, *tableStack);
+           string expType = getExpressionType($3, *tableStack);
+           if (!isBooleanType(expType)) {
+             output::errorMismatch(yylineno);
+             exit(0);
+           }
            exitScope(*tableStack);
            offsettStack->pop_offset(yylineno);
            loopDepth--;
@@ -182,11 +201,13 @@ Call: ID LPAREN Exp RPAREN
       }
 
       // Check if the entry is a function
-      functions* func = dynamic_cast<functions*>(entry);
-      if (!func) {
+      if (entry->type != "function") {
         output::errorUndefFunc(yylineno, funcName);
         exit(0);
       }
+
+      // Now we know it's a function, we can safely cast it
+      functions* func = static_cast<functions*>(entry);
 
       // Check if the argument count and types match
       if (func->numofarg != 1 || func->all_arg[0] != $3->type) {
@@ -205,13 +226,12 @@ Call: ID LPAREN Exp RPAREN
   ;
 
 
-Type: INT { $$=new TNode("int");}
-    | BYTE { $$=new TNode("byte");}
-    | BOOL { $$=new TNode("bool");};
+Type: INT { $$=new TNode("int"); printProductionRule(16); }
+    | BYTE { $$=new TNode("byte"); printProductionRule(17); }
+    | BOOL { $$=new TNode("bool"); printProductionRule(18); };
 
 
-
-Exp: LPAREN Exp RPAREN { $$ = $2; }
+Exp: LPAREN Exp RPAREN { $$ = $2; printProductionRule(19);}
    | Exp additive Exp 
      { 
        checkNumericExpression($1, *tableStack);
@@ -219,6 +239,7 @@ Exp: LPAREN Exp RPAREN { $$ = $2; }
        string type1 = $1->type;
        string type2 = $3->type;
        $$ = new ExpNode(type1 == "INT" || type2 == "INT" ? "INT" : "BYTE");
+       printProductionRule(20);
      }
    | Exp multiplicative Exp 
      { 
@@ -227,6 +248,7 @@ Exp: LPAREN Exp RPAREN { $$ = $2; }
        string type1 = $1->type;
        string type2 = $3->type;
        $$ = new ExpNode(type1 == "INT" || type2 == "INT" ? "INT" : "BYTE");
+       printProductionRule(20);
      }
    | ID 
      { 
@@ -236,9 +258,10 @@ Exp: LPAREN Exp RPAREN { $$ = $2; }
          exit(0);
        }
        $$ = new ExpNode(type);
+       printProductionRule(21);
      }
-   | Call { $$ = $1; }
-   | NUM { $$ = new ExpNode("INT"); }
+   | Call { $$ = $1; printProductionRule(22);  }
+   | NUM { $$ = new ExpNode("INT"); printProductionRule(23);}
    | NUM B 
      { 
        int value = static_cast<Num*>($1)->num;
@@ -247,37 +270,43 @@ Exp: LPAREN Exp RPAREN { $$ = $2; }
          exit(0);
        }
        $$ = new ExpNode("BYTE");
+       printProductionRule(24);
      }
-   | STRING { $$ = new ExpNode("STRING"); }
+   | STRING { $$ = new ExpNode("STRING");printProductionRule(25); }
    | TRUE { $$ = new ExpNode("BOOL"); }
    | FALSE { $$ = new ExpNode("BOOL"); }
    | NOT Exp 
      { 
        checkBooleanExpression($2, *tableStack);
        $$ = new ExpNode("BOOL");
+       printProductionRule(28);
      }
    | Exp AND Exp 
      { 
        checkBooleanExpression($1, *tableStack);
        checkBooleanExpression($3, *tableStack);
        $$ = new ExpNode("BOOL");
+       printProductionRule(29);
      }
    | Exp OR Exp 
      { 
        checkBooleanExpression($1, *tableStack);
        checkBooleanExpression($3, *tableStack);
        $$ = new ExpNode("BOOL");
+       printProductionRule(30);
      }
    | Exp equality Exp 
      { 
        checkTypeMismatch($1->type, $3->type, "equality", yylineno);
        $$ = new ExpNode("BOOL");
+       printProductionRule(31);
      }
    | Exp relational Exp 
      { 
        checkNumericExpression($1, *tableStack);
        checkNumericExpression($3, *tableStack);
        $$ = new ExpNode("BOOL");
+       printProductionRule(31);
      }
    | LPAREN Type RPAREN Exp 
      { 
@@ -287,6 +316,7 @@ Exp: LPAREN Exp RPAREN { $$ = $2; }
          exit(0);
        }
        $$ = new ExpNode(targetType);
+       printProductionRule(32);
      }
    ;
     // Exp: LPAREN Exp RPAREN{printProductionRule(19);}
@@ -309,7 +339,9 @@ Exp: LPAREN Exp RPAREN { $$ = $2; }
 
 %%
 int main(){
+    yydebug = 1; 
     return yyparse();
+
 }
 
 void yyerror(const char*){

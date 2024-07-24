@@ -16,6 +16,8 @@ bool isTypeCompatible(const string& type1, const string& type2);
 bool isNumericType(const string& type);
 bool isBooleanType(const string& type);
 void checkTypeMismatch(const string& expected, const string& actual, const string& name, int lineno);
+void checkBooleanExpression(const TNode* exp, TablesStack& tables);
+void checkNumericExpression(const TNode* exp, TablesStack& tables);
 // semantic eroro functions 
 void checkVariableDeclaration(TablesStack& tableStack, const string& name, int lineno);
 void checkFunctionDeclaration(TablesStack& tableStack, const string& name, int lineno);
@@ -38,6 +40,7 @@ void addVariableToScope(TablesStack& tables, const string& name, const string& t
 string getSymbolType(TablesStack& tableStack, const string& name);
 bool isSymbolDefinedInCurrentScope(TablesStack& tableStack, const string& name);
 string getCurrentFunctionReturnType(TablesStack& tableStack);
+bool isExplicitCastingValid(const string& targetType, const string& sourceType);
 
 // main function checker
 void checkMainFunction(TablesStack& tableStack);

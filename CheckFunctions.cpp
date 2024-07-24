@@ -74,19 +74,29 @@ void checkTypeMismatch(const string& expected, const string& actual, const strin
     }
 }
 
-void checkBooleanExpression(const TNode* exp, TablesStack& tables) {
-    string type = getExpressionType(exp, tables);
-    if (type != "BOOL") {
-        output::errorMismatch(yylineno);  
-        exit(0);
-    }
-}
 void checkNumericExpression(const TNode* exp, TablesStack& tables) {
     string type = getExpressionType(exp, tables);
-    if (type != "INT" && type != "BYTE") {
+    if (!isNumericType(type)) {
         output::errorMismatch(yylineno);
         exit(0);
     }
+}
+
+void checkBooleanExpression(const TNode* exp, TablesStack& tables) {
+    string type = getExpressionType(exp, tables);
+    if (!isBooleanType(type)) {
+        output::errorMismatch(yylineno);
+        exit(0);
+    }
+}
+
+bool isExplicitCastingValid(const string& targetType, const string& sourceType) {
+    if (targetType == sourceType) return true;
+    if ((targetType == "INT" && sourceType == "BYTE") ||
+        (targetType == "BYTE" && sourceType == "INT")) {
+        return true;
+    }
+    return false;
 }
 
 
@@ -199,6 +209,7 @@ void checkContinueStatement(int loopDepth, int lineno) {
     }
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////// scope and symbol table management functions /////////////////////////////
 void createNewScope(TablesStack& tableStack) {
@@ -306,7 +317,6 @@ void checkFunctionCall(TablesStack& tableStack, const string& funcName, const ve
     // If we reach here, the function call is valid
 }
 void checkReturnStatement(TablesStack& tableStack, const string& returnType, int lineno) {
-    // Get the expected return type from the current function
     string expectedReturnType = getCurrentFunctionReturnType(tableStack);
     
     if (expectedReturnType.empty()) {
@@ -315,11 +325,20 @@ void checkReturnStatement(TablesStack& tableStack, const string& returnType, int
         exit(0);
     }
     
+    if (expectedReturnType == "VOID" && returnType != "VOID") {
+        output::errorMismatch(lineno);
+        exit(0);
+    }
+    
+    if (expectedReturnType != "VOID" && returnType == "VOID") {
+        output::errorMismatch(lineno);
+        exit(0);
+    }
+    
     if (!isTypeCompatible(expectedReturnType, returnType)) {
         output::errorMismatch(lineno);
         exit(0);
     }
-    // If we reach here, the return statement is valid
 }
 string getCurrentFunctionReturnType(TablesStack& tableStack) {
     // Traverse the scope stack from top to bottom

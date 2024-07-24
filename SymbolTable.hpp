@@ -61,6 +61,11 @@ public:
 
 ////////////////////////////////////////
 
+
+
+
+
+// !! check this
 /// creating a table entry that will save local variables - t6
 class tableEntry {
 public:
@@ -69,6 +74,20 @@ public:
     int offset;
     tableEntry(const string& name, const string& type, int offset)
         : name(name), type(type), offset(offset) {}
+    virtual ~tableEntry() {} // Add a virtual destructor
+};
+
+class functions : public tableEntry {
+public:
+    int numofarg;
+    vector<string> all_arg;
+    string ret_type;
+    bool isOverride;
+
+    functions(const string& name, const string& type, int offset, int num,
+              vector<string> all_the_arg, string the_ret_type, bool isOverride)
+        : tableEntry(name, "function", offset), numofarg(num), all_arg(all_the_arg),
+          ret_type(ret_type), isOverride(isOverride) {}
 };
 
 // scope entry for every new scope 
@@ -81,21 +100,6 @@ public:
     ScopeBlock(ScopeBlock* parent) : parent(parent) {}
 };
 
-
-// !! check this
-class functions : public tableEntry {
-public:
-    int numofarg;
-    vector<string> all_arg;
-    string ret_type;
-    bool isOverride;
-
-    functions(string the_name, string the_type, int the_offset, int the_num,
-              vector<string> all_the_arg, string the_ret_type, bool the_isOverride)
-        : tableEntry(the_name, the_type, the_offset), numofarg(the_num), all_arg(all_the_arg),
-          ret_type(the_ret_type), isOverride(the_isOverride) {}
-};
-
 class TablesStack {
 public:
     vector<ScopeBlock*> stackTable;
@@ -104,7 +108,14 @@ public:
     TablesStack() {
         ParentScope = InsertTable(nullptr);
     }
-
+    ~TablesStack() {
+        for (auto scope : stackTable) {
+            for (auto entry : scope->scope) {
+                delete entry;
+            }
+            delete scope;
+        }
+    }
     ScopeBlock* InsertTable(ScopeBlock* parent) {
         ScopeBlock* newScope = new ScopeBlock(parent);
         stackTable.push_back(newScope);
