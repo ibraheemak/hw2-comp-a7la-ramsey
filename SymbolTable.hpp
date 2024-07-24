@@ -79,14 +79,13 @@ public:
 
 class functions : public tableEntry {
 public:
-    int numofarg;
     vector<string> all_arg;
     string ret_type;
     bool isOverride;
 
-    functions(const string& name, const string& type, int offset, int num,
+    functions(const string& name, const string& type, int offset,
               vector<string> all_the_arg, string the_ret_type, bool isOverride)
-        : tableEntry(name, "function", offset), numofarg(num), all_arg(all_the_arg),
+        : tableEntry(name, "function", offset), all_arg(all_the_arg),
           ret_type(ret_type), isOverride(isOverride) {}
 };
 
@@ -128,9 +127,9 @@ public:
     }
     // !! check this
     void insertFunction(ScopeBlock* curScope, const string& name, const string& type, int offset,
-                        int numArgs, const vector<string>& allArgs, const string& retType, 
+                         const vector<string>& allArgs, const string& retType, 
                         bool isOverride = false) {
-        functions* newFunc = new functions(name, type, offset, numArgs, allArgs, retType, isOverride);
+        functions* newFunc = new functions(name, type, offset, allArgs, retType, isOverride);
         curScope->scope.push_back(newFunc);
     }
 

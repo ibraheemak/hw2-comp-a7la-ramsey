@@ -4,7 +4,7 @@
 #include "hw3_output.hpp"
 #include <string>
 #include <sstream>
-
+#include <iostream>
 
 using namespace output;
 
@@ -31,7 +31,7 @@ string getExpressionType(const TNode* exp, TablesStack& tables) {
         return "bool"; // Relational operations always return bool
     } else if (const ExpNode* expNode = dynamic_cast<const ExpNode*>(exp)) {
         // This might be a logical operation (AND, OR, NOT)
-        return "bool";
+        return expNode->type;
     }
     
     // If we reach here, it's an unknown expression type
@@ -74,9 +74,18 @@ void checkTypeMismatch(const string& expected, const string& actual, const strin
     }
 }
 
-void checkNumericExpression(const TNode* exp, TablesStack& tables) {
+/*void checkNumericExpression(const TNode* exp, TablesStack& tables) {
     string type = getExpressionType(exp, tables);
     if (!isNumericType(type)) {
+        output::errorMismatch(yylineno);
+        exit(0);
+    }
+}*/
+void checkNumericExpression(const TNode* exp, TablesStack& tables) {
+    string type = getExpressionType(exp, tables);
+    std::cout << "Expression type: " << type << endl;
+    if (!isNumericType(type)) {
+    std::cout << "Not a numeric type!" << endl;
         output::errorMismatch(yylineno);
         exit(0);
     }
@@ -109,7 +118,7 @@ void checkMainFunction(TablesStack& tables) {
     for (const auto& entry : globalScope->scope) {
         if (entry->name == "main" && entry->type == "function") {
             functions* mainFunc = static_cast<functions*>(entry);
-            if (mainFunc->ret_type == "void" && mainFunc->numofarg == 0) {
+            if (mainFunc->ret_type == "void") {
                 mainFound = true;
                 break;
             }
@@ -252,8 +261,7 @@ void exitScope(TablesStack& tableStack) {
 void addFunctionToGlobalScope(TablesStack& tableStack, const string& name, const string& returnType, const vector<string>& paramTypes) {
     if (!tableStack.stackTable.empty()) {
         ScopeBlock* globalScope = tableStack.ParentScope;
-        int numArgs = paramTypes.size();
-        tableStack.insertFunction(globalScope, name, "function", 0, numArgs, paramTypes, returnType);
+        tableStack.insertFunction(globalScope, name, "function", 0, paramTypes, returnType);
     }
 }
 
@@ -275,6 +283,7 @@ void checkFunctionDeclaration(TablesStack& tableStack, const string& name, int l
     // If we reach here, the function declaration is valid
 }
 void checkAssignment(const string& lhsType, const string& rhsType, int lineno) {
+    cout << "Debug: Checking assignment at line " << lineno << " with lhsType: " << lhsType << " and rhsType: " << rhsType << endl;
     if (!isTypeCompatible(lhsType, rhsType)) {
         output::errorMismatch(lineno);
         exit(0);
@@ -287,35 +296,38 @@ void checkFunctionCall(TablesStack& tableStack, const string& funcName, const ve
         output::errorUndefFunc(lineno, funcName);
         exit(0);
     }
-    
-    // Parse the function type to get expected argument types
-    size_t argsStart = funcType.find('(');
-    size_t argsEnd = funcType.find(')');
-    string argsStr = funcType.substr(argsStart + 1, argsEnd - argsStart - 1);
-    vector<string> expectedArgTypes;
-    
-    size_t pos = 0;
-    while ((pos = argsStr.find(',')) != string::npos) {
-        expectedArgTypes.push_back(argsStr.substr(0, pos));
-        argsStr.erase(0, pos + 1);
-    }
-    if (!argsStr.empty()) {
-        expectedArgTypes.push_back(argsStr);
-    }
 
-    if (argTypes.size() != expectedArgTypes.size()) {
-        output::errorPrototypeMismatch(lineno, funcName, funcType);
-        exit(0);
-    }
-    
-    for (size_t i = 0; i < argTypes.size(); ++i) {
-        if (!isTypeCompatible(expectedArgTypes[i], argTypes[i])) {
-            output::errorPrototypeMismatch(lineno, funcName, funcType);
-            exit(0);
+    // Find the function entry
+    tableEntry* entry = nullptr;
+    for (const auto& e : tableStack.ParentScope->scope) {
+        if (e->name == funcName) {
+            entry = e;
+            break;
         }
     }
-    // If we reach here, the function call is valid
+
+    if (!entry || entry->type != "function") {
+        output::errorUndefFunc(lineno, funcName);
+        exit(0);
+    }
+
+    functions* func = static_cast<functions*>(entry);
+
+    // Check if the argument type matches one of the function's parameter types
+    bool matchFound = false;
+    for (const auto& paramType : func->all_arg) {
+        if (isTypeCompatible(paramType, argTypes[0])) {
+            matchFound = true;
+            break;
+        }
+    }
+
+    if (!matchFound) {
+        output::errorPrototypeMismatch(lineno, funcName, output::makeFunctionType(func->all_arg[0], func->ret_type));
+        exit(0);
+    }
 }
+
 void checkReturnStatement(TablesStack& tableStack, const string& returnType, int lineno) {
     string expectedReturnType = getCurrentFunctionReturnType(tableStack);
     

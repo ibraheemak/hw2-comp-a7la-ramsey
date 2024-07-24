@@ -539,8 +539,8 @@ static const yytype_int16 yyrline[] =
 {
        0,    42,    42,    50,    68,    69,    72,    78,    87,    98,
      110,   111,   116,   129,   143,   156,   161,   168,   175,   184,
-     229,   230,   231,   234,   235,   245,   254,   264,   265,   266,
-     276,   277,   278,   279,   285,   292,   299,   305,   312
+     236,   237,   238,   241,   242,   252,   261,   271,   272,   273,
+     283,   284,   285,   286,   292,   299,   306,   312,   319
 };
 #endif
 
@@ -1192,10 +1192,10 @@ yyreduce:
     vector<string> printParmType = {"string"};
     addFunctionToGlobalScope(*tableStack, "print", "void", printParmType);
     
-    vector<string> printiParmType = {"int"};
+    vector<string> printiParmType = {"int","byte"};
     addFunctionToGlobalScope(*tableStack, "printi", "void", printiParmType);
     
-    vector<string> readiParmType = {"int"};  // readi takes an int parameter
+    vector<string> readiParmType = {"int","byte"};  // readi takes an int parameter
     addFunctionToGlobalScope(*tableStack, "readi", "int", readiParmType);
   }
 #line 1202 "parser.tab.cpp"
@@ -1400,49 +1400,56 @@ yyreduce:
       // Now we know it's a function, we can safely cast it
       functions* func = static_cast<functions*>(entry);
 
-      // Check if the argument count and types match
-      if (func->numofarg != 1 || func->all_arg[0] != yyvsp[-1]->type) {
-        output::errorPrototypeMismatch(yylineno, funcName, output::makeFunctionType(func->all_arg[0], func->ret_type));
-        exit(0);
-      }
+      bool matchFound = false;
+        for (const auto& paramType : func->all_arg) {
+            if (isTypeCompatible(paramType, yyvsp[-1]->type)) {
+                matchFound = true;
+                break;
+            }
+        }
 
+        if (!matchFound) {
+            output::errorPrototypeMismatch(yylineno, funcName, output::makeFunctionType(func->all_arg[0], func->ret_type));
+            exit(0);
+        }
       // Create the expression node with the function's return type
+      cout<<"func->ret_type:"<<func->ret_type<<endl;
       yyval = new ExpNode(func->ret_type);
-      
+      cout<<yyval->type<<endl;
       printProductionRule(15);
       
       delete static_cast<IdentifierStr*>(yyvsp[-3]);
       delete yyvsp[-1];
     }
-#line 1418 "parser.tab.cpp"
+#line 1425 "parser.tab.cpp"
     break;
 
   case 20: /* Type: INT  */
-#line 229 "parser.ypp"
+#line 236 "parser.ypp"
           { yyval=new TNode("int"); printProductionRule(16); }
-#line 1424 "parser.tab.cpp"
+#line 1431 "parser.tab.cpp"
     break;
 
   case 21: /* Type: BYTE  */
-#line 230 "parser.ypp"
+#line 237 "parser.ypp"
            { yyval=new TNode("byte"); printProductionRule(17); }
-#line 1430 "parser.tab.cpp"
+#line 1437 "parser.tab.cpp"
     break;
 
   case 22: /* Type: BOOL  */
-#line 231 "parser.ypp"
+#line 238 "parser.ypp"
            { yyval=new TNode("bool"); printProductionRule(18); }
-#line 1436 "parser.tab.cpp"
+#line 1443 "parser.tab.cpp"
     break;
 
   case 23: /* Exp: LPAREN Exp RPAREN  */
-#line 234 "parser.ypp"
+#line 241 "parser.ypp"
                        { yyval = yyvsp[-1]; printProductionRule(19);}
-#line 1442 "parser.tab.cpp"
+#line 1449 "parser.tab.cpp"
     break;
 
   case 24: /* Exp: Exp additive Exp  */
-#line 236 "parser.ypp"
+#line 243 "parser.ypp"
      { 
        checkNumericExpression(yyvsp[-2], *tableStack);
        checkNumericExpression(yyvsp[0], *tableStack);
@@ -1452,11 +1459,11 @@ yyreduce:
        yyval = new ExpNode(type1 == "int" || type2 == "int" ? "int" : "byte");
        printProductionRule(20);
      }
-#line 1456 "parser.tab.cpp"
+#line 1463 "parser.tab.cpp"
     break;
 
   case 25: /* Exp: Exp multiplicative Exp  */
-#line 246 "parser.ypp"
+#line 253 "parser.ypp"
      { 
        checkNumericExpression(yyvsp[-2], *tableStack);
        checkNumericExpression(yyvsp[0], *tableStack);
@@ -1465,11 +1472,11 @@ yyreduce:
        yyval = new ExpNode(type1 == "int" || type2 == "int" ? "int" : "byte");
        printProductionRule(20);
      }
-#line 1469 "parser.tab.cpp"
+#line 1476 "parser.tab.cpp"
     break;
 
   case 26: /* Exp: ID  */
-#line 255 "parser.ypp"
+#line 262 "parser.ypp"
      { 
        string type = getSymbolType(*tableStack, static_cast<IdentifierStr*>(yyvsp[0])->id);
        if(type.empty()) {
@@ -1479,23 +1486,23 @@ yyreduce:
        yyval = new ExpNode(type);
        printProductionRule(21);
      }
-#line 1483 "parser.tab.cpp"
+#line 1490 "parser.tab.cpp"
     break;
 
   case 27: /* Exp: Call  */
-#line 264 "parser.ypp"
+#line 271 "parser.ypp"
           { yyval = yyvsp[0]; printProductionRule(22);  }
-#line 1489 "parser.tab.cpp"
+#line 1496 "parser.tab.cpp"
     break;
 
   case 28: /* Exp: NUM  */
-#line 265 "parser.ypp"
+#line 272 "parser.ypp"
          { yyval = new ExpNode("int"); printProductionRule(23);}
-#line 1495 "parser.tab.cpp"
+#line 1502 "parser.tab.cpp"
     break;
 
   case 29: /* Exp: NUM B  */
-#line 267 "parser.ypp"
+#line 274 "parser.ypp"
      { 
        int value = static_cast<Num*>(yyvsp[-1])->num;
        if(!isLegalByteValue(value)) {
@@ -1505,82 +1512,82 @@ yyreduce:
        yyval = new ExpNode("byte");
        printProductionRule(24);
      }
-#line 1509 "parser.tab.cpp"
+#line 1516 "parser.tab.cpp"
     break;
 
   case 30: /* Exp: STRING  */
-#line 276 "parser.ypp"
+#line 283 "parser.ypp"
             { yyval = new ExpNode("string");printProductionRule(25); }
-#line 1515 "parser.tab.cpp"
+#line 1522 "parser.tab.cpp"
     break;
 
   case 31: /* Exp: TRUE  */
-#line 277 "parser.ypp"
+#line 284 "parser.ypp"
           { yyval = new ExpNode("bool"); }
-#line 1521 "parser.tab.cpp"
+#line 1528 "parser.tab.cpp"
     break;
 
   case 32: /* Exp: FALSE  */
-#line 278 "parser.ypp"
+#line 285 "parser.ypp"
            { yyval = new ExpNode("bool"); }
-#line 1527 "parser.tab.cpp"
+#line 1534 "parser.tab.cpp"
     break;
 
   case 33: /* Exp: NOT Exp  */
-#line 280 "parser.ypp"
+#line 287 "parser.ypp"
      { 
        checkBooleanExpression(yyvsp[0], *tableStack);
        yyval = new ExpNode("bool");
        printProductionRule(28);
      }
-#line 1537 "parser.tab.cpp"
+#line 1544 "parser.tab.cpp"
     break;
 
   case 34: /* Exp: Exp AND Exp  */
-#line 286 "parser.ypp"
+#line 293 "parser.ypp"
      { 
        checkBooleanExpression(yyvsp[-2], *tableStack);
        checkBooleanExpression(yyvsp[0], *tableStack);
        yyval = new ExpNode("bool");
        printProductionRule(29);
      }
-#line 1548 "parser.tab.cpp"
+#line 1555 "parser.tab.cpp"
     break;
 
   case 35: /* Exp: Exp OR Exp  */
-#line 293 "parser.ypp"
+#line 300 "parser.ypp"
      { 
        checkBooleanExpression(yyvsp[-2], *tableStack);
        checkBooleanExpression(yyvsp[0], *tableStack);
        yyval = new ExpNode("bool");
        printProductionRule(30);
      }
-#line 1559 "parser.tab.cpp"
+#line 1566 "parser.tab.cpp"
     break;
 
   case 36: /* Exp: Exp equality Exp  */
-#line 300 "parser.ypp"
+#line 307 "parser.ypp"
      { 
        checkTypeMismatch(yyvsp[-2]->type, yyvsp[0]->type, "equality", yylineno);
        yyval = new ExpNode("bool");
        printProductionRule(31);
      }
-#line 1569 "parser.tab.cpp"
+#line 1576 "parser.tab.cpp"
     break;
 
   case 37: /* Exp: Exp relational Exp  */
-#line 306 "parser.ypp"
+#line 313 "parser.ypp"
      { 
        checkNumericExpression(yyvsp[-2], *tableStack);
        checkNumericExpression(yyvsp[0], *tableStack);
        yyval = new ExpNode("bool");
        printProductionRule(31);
      }
-#line 1580 "parser.tab.cpp"
+#line 1587 "parser.tab.cpp"
     break;
 
   case 38: /* Exp: LPAREN Type RPAREN Exp  */
-#line 313 "parser.ypp"
+#line 320 "parser.ypp"
      { 
        string targetType = static_cast<TNode*>(yyvsp[-2])->type;
        if(!isTypeCompatible(targetType, yyvsp[0]->type)) {
@@ -1590,11 +1597,11 @@ yyreduce:
        yyval = new ExpNode(targetType);
        printProductionRule(32);
      }
-#line 1594 "parser.tab.cpp"
+#line 1601 "parser.tab.cpp"
     break;
 
 
-#line 1598 "parser.tab.cpp"
+#line 1605 "parser.tab.cpp"
 
       default: break;
     }
@@ -1788,14 +1795,14 @@ yyreturn:
   return yyresult;
 }
 
-#line 341 "parser.ypp"
+#line 348 "parser.ypp"
 
-int main(){
+/*int main(){
     yydebug = 1; 
     return yyparse();
 
 }
-
+*/
 void yyerror(const char*){
     errorSyn(yylineno);
     exit(0);
