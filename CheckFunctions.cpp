@@ -16,22 +16,22 @@ extern int yylineno;
 
 string getExpressionType(const TNode* exp, TablesStack& tables) {
     if (const Num* num = dynamic_cast<const Num*>(exp)) {
-        return "INT"; // Assuming Num is always INT in your implementation
+        return "int"; // Assuming Num is always int in your implementation
     } else if (const BoolLex* boolExp = dynamic_cast<const BoolLex*>(exp)) {
-        return "BOOL";
+        return "bool";
     } else if (const StringLex* strExp = dynamic_cast<const StringLex*>(exp)) {
-        return "STRING";
+        return "string";
     } else if (const IdentifierStr* id = dynamic_cast<const IdentifierStr*>(exp)) {
         return getSymbolType(tables, id->id);
     } else if (const Binop* binop = dynamic_cast<const Binop*>(exp)) {
         // For binary operations, you might need to check the operands
         // This is a simplification and might need to be expanded
-        return "INT"; // Assuming binary operations result in INT
+        return "int"; // Assuming binary operations result in int
     } else if (const Relop* relop = dynamic_cast<const Relop*>(exp)) {
-        return "BOOL"; // Relational operations always return BOOL
+        return "bool"; // Relational operations always return bool
     } else if (const ExpNode* expNode = dynamic_cast<const ExpNode*>(exp)) {
         // This might be a logical operation (AND, OR, NOT)
-        return "BOOL";
+        return "bool";
     }
     
     // If we reach here, it's an unknown expression type
@@ -43,15 +43,15 @@ bool isTypeCompatible(const string& type1, const string& type2) {
     if (type1 == type2) {
         return true;
     }
-    if (type1 == "INT" && type2 == "BYTE") {
+    if (type1 == "int" && type2 == "byte") {
         return true;
     }
-    // BYTE can be assigned to INT, but not vice versa
-    if (type1 == "BYTE" && type2 == "INT") {
+    // byte can be assigned to int, but not vice versa
+    if (type1 == "byte" && type2 == "int") {
         return false;
     }
     // Handle explicit casting
-    if ((type1 == "INT" || type1 == "BYTE") && (type2 == "INT" || type2 == "BYTE")) {
+    if ((type1 == "int" || type1 == "byte") && (type2 == "int" || type2 == "byte")) {
         return true;
     }
     // All other cases are incompatible
@@ -60,11 +60,11 @@ bool isTypeCompatible(const string& type1, const string& type2) {
 
 
 bool isNumericType(const string& type) {
-    return (type == "INT" || type == "BYTE");
+    return (type == "int" || type == "byte");
 }
 
 bool isBooleanType(const string& type) {
-    return (type == "BOOL");
+    return (type == "bool");
 }
 
 void checkTypeMismatch(const string& expected, const string& actual, const string& name, int lineno) {
@@ -92,8 +92,8 @@ void checkBooleanExpression(const TNode* exp, TablesStack& tables) {
 
 bool isExplicitCastingValid(const string& targetType, const string& sourceType) {
     if (targetType == sourceType) return true;
-    if ((targetType == "INT" && sourceType == "BYTE") ||
-        (targetType == "BYTE" && sourceType == "INT")) {
+    if ((targetType == "int" && sourceType == "byte") ||
+        (targetType == "byte" && sourceType == "int")) {
         return true;
     }
     return false;
@@ -109,7 +109,7 @@ void checkMainFunction(TablesStack& tables) {
     for (const auto& entry : globalScope->scope) {
         if (entry->name == "main" && entry->type == "function") {
             functions* mainFunc = static_cast<functions*>(entry);
-            if (mainFunc->ret_type == "VOID" && mainFunc->numofarg == 0) {
+            if (mainFunc->ret_type == "void" && mainFunc->numofarg == 0) {
                 mainFound = true;
                 break;
             }
@@ -161,7 +161,7 @@ string getVariableType(TablesStack& tables, const string& name) {
 
 bool areTypesCompatible(const string& type1, const string& type2) {
     if (type1 == type2) return true;
-    if (type1 == "INT" && type2 == "BYTE") return true;
+    if (type1 == "int" && type2 == "byte") return true;
     return false;
 }
 
@@ -325,12 +325,12 @@ void checkReturnStatement(TablesStack& tableStack, const string& returnType, int
         exit(0);
     }
     
-    if (expectedReturnType == "VOID" && returnType != "VOID") {
+    if (expectedReturnType == "void" && returnType != "void") {
         output::errorMismatch(lineno);
         exit(0);
     }
     
-    if (expectedReturnType != "VOID" && returnType == "VOID") {
+    if (expectedReturnType != "void" && returnType == "void") {
         output::errorMismatch(lineno);
         exit(0);
     }

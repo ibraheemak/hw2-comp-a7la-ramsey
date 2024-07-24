@@ -58,8 +58,8 @@ M1: %empty
     vector<string> printiParmType = {"int"};
     addFunctionToGlobalScope(*tableStack, "printi", "void", printiParmType);
     
-  vector<string> readiParmType = {};  // readi takes an int parameter
-  addFunctionToGlobalScope(*tableStack, "readi", "int", readiParmType);
+    vector<string> readiParmType = {"int"};  // readi takes an int parameter
+    addFunctionToGlobalScope(*tableStack, "readi", "int", readiParmType);
   }
   ;
 
@@ -110,7 +110,7 @@ Statement: LBRACE M_NEW_SCOPE Statements RBRACE
          | Call SC { printProductionRule(8); }
          | RETURN SC 
          {
-           checkReturnStatement(*tableStack, "VOID", yylineno);
+           checkReturnStatement(*tableStack, "void", yylineno);
            printProductionRule(9);
          }
          | IF LPAREN Exp RPAREN M_NEW_SCOPE Statement
@@ -238,7 +238,8 @@ Exp: LPAREN Exp RPAREN { $$ = $2; printProductionRule(19);}
        checkNumericExpression($3, *tableStack);
        string type1 = $1->type;
        string type2 = $3->type;
-       $$ = new ExpNode(type1 == "INT" || type2 == "INT" ? "INT" : "BYTE");
+       cout << type1 <<endl;
+       $$ = new ExpNode(type1 == "int" || type2 == "int" ? "int" : "byte");
        printProductionRule(20);
      }
    | Exp multiplicative Exp 
@@ -247,7 +248,7 @@ Exp: LPAREN Exp RPAREN { $$ = $2; printProductionRule(19);}
        checkNumericExpression($3, *tableStack);
        string type1 = $1->type;
        string type2 = $3->type;
-       $$ = new ExpNode(type1 == "INT" || type2 == "INT" ? "INT" : "BYTE");
+       $$ = new ExpNode(type1 == "int" || type2 == "int" ? "int" : "byte");
        printProductionRule(20);
      }
    | ID 
@@ -261,7 +262,7 @@ Exp: LPAREN Exp RPAREN { $$ = $2; printProductionRule(19);}
        printProductionRule(21);
      }
    | Call { $$ = $1; printProductionRule(22);  }
-   | NUM { $$ = new ExpNode("INT"); printProductionRule(23);}
+   | NUM { $$ = new ExpNode("int"); printProductionRule(23);}
    | NUM B 
      { 
        int value = static_cast<Num*>($1)->num;
@@ -269,43 +270,43 @@ Exp: LPAREN Exp RPAREN { $$ = $2; printProductionRule(19);}
          output::errorByteTooLarge(yylineno, to_string(value));
          exit(0);
        }
-       $$ = new ExpNode("BYTE");
+       $$ = new ExpNode("byte");
        printProductionRule(24);
      }
-   | STRING { $$ = new ExpNode("STRING");printProductionRule(25); }
-   | TRUE { $$ = new ExpNode("BOOL"); }
-   | FALSE { $$ = new ExpNode("BOOL"); }
+   | STRING { $$ = new ExpNode("string");printProductionRule(25); }
+   | TRUE { $$ = new ExpNode("bool"); }
+   | FALSE { $$ = new ExpNode("bool"); }
    | NOT Exp 
      { 
        checkBooleanExpression($2, *tableStack);
-       $$ = new ExpNode("BOOL");
+       $$ = new ExpNode("bool");
        printProductionRule(28);
      }
    | Exp AND Exp 
      { 
        checkBooleanExpression($1, *tableStack);
        checkBooleanExpression($3, *tableStack);
-       $$ = new ExpNode("BOOL");
+       $$ = new ExpNode("bool");
        printProductionRule(29);
      }
    | Exp OR Exp 
      { 
        checkBooleanExpression($1, *tableStack);
        checkBooleanExpression($3, *tableStack);
-       $$ = new ExpNode("BOOL");
+       $$ = new ExpNode("bool");
        printProductionRule(30);
      }
    | Exp equality Exp 
      { 
        checkTypeMismatch($1->type, $3->type, "equality", yylineno);
-       $$ = new ExpNode("BOOL");
+       $$ = new ExpNode("bool");
        printProductionRule(31);
      }
    | Exp relational Exp 
      { 
        checkNumericExpression($1, *tableStack);
        checkNumericExpression($3, *tableStack);
-       $$ = new ExpNode("BOOL");
+       $$ = new ExpNode("bool");
        printProductionRule(31);
      }
    | LPAREN Type RPAREN Exp 
