@@ -12,7 +12,7 @@ void addFunctionToGlobalScope(TablesStack& tableStack, const string& name, const
 
 // type checking functions 
 string getExpressionType(const TNode* exp, TablesStack& tables);
-bool isTypeCompatible(const string& type1, const string& type2);
+bool isTypeCompatible(const string& type1, const string& type2,bool explicitCast = false);
 bool isNumericType(const string& type);
 bool isBooleanType(const string& type);
 void checkTypeMismatch(const string& expected, const string& actual, const string& name, int lineno);

@@ -537,10 +537,10 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,    42,    42,    50,    68,    69,    72,    78,    87,    98,
-     110,   111,   116,   129,   143,   156,   161,   168,   175,   184,
-     236,   237,   238,   241,   242,   252,   261,   271,   272,   273,
-     283,   284,   285,   286,   292,   299,   306,   312,   319
+       0,    42,    42,    50,    68,    69,    74,    80,    89,   100,
+     112,   113,   118,   131,   145,   158,   163,   170,   177,   186,
+     247,   248,   249,   252,   253,   263,   272,   282,   283,   284,
+     294,   295,   296,   297,   303,   310,   317,   323,   330
 };
 #endif
 
@@ -1186,8 +1186,8 @@ yyreduce:
   case 3: /* M1: %empty  */
 #line 51 "parser.ypp"
   {
-    createNewScope(*tableStack);  // Create global scope
-    offsettStack->push_offset(0);  // Initialize offset stack for global scope
+    //createNewScope(*tableStack);  // Create global scope //check
+    //offsettStack->push_offset(0);  // Initialize offset stack for global scope // check
 
     vector<string> printParmType = {"string"};
     addFunctionToGlobalScope(*tableStack, "print", "void", printParmType);
@@ -1195,7 +1195,7 @@ yyreduce:
     vector<string> printiParmType = {"int","byte"};
     addFunctionToGlobalScope(*tableStack, "printi", "void", printiParmType);
     
-    vector<string> readiParmType = {"int","byte"};  // readi takes an int parameter
+    vector<string> readiParmType = {"int","byte"};  
     addFunctionToGlobalScope(*tableStack, "readi", "int", readiParmType);
   }
 #line 1202 "parser.tab.cpp"
@@ -1209,22 +1209,24 @@ yyreduce:
 
   case 5: /* Statements: Statements Statement  */
 #line 69 "parser.ypp"
-                                 { printProductionRule(3); }
-#line 1214 "parser.tab.cpp"
+                                 { printProductionRule(3);
+                        // Debug: Ensure no type checks are done here directly.
+              cout << "Reducing Statements -> Statements Statement at line " << yylineno << endl; }
+#line 1216 "parser.tab.cpp"
     break;
 
   case 6: /* Statement: LBRACE M_NEW_SCOPE Statements RBRACE  */
-#line 73 "parser.ypp"
+#line 75 "parser.ypp"
          {
            printProductionRule(4);
            exitScope(*tableStack);
            offsettStack->pop_offset(yylineno);
          }
-#line 1224 "parser.tab.cpp"
+#line 1226 "parser.tab.cpp"
     break;
 
   case 7: /* Statement: Type ID SC  */
-#line 79 "parser.ypp"
+#line 81 "parser.ypp"
          {
            checkVariableDeclaration(*tableStack, static_cast<IdentifierStr*>(yyvsp[-1])->id, yylineno);
            addSymbolToCurrentScope(*tableStack, static_cast<IdentifierStr*>(yyvsp[-1])->id, static_cast<TNode*>(yyvsp[-2])->type, offsettStack->top_offset(yylineno));
@@ -1233,11 +1235,11 @@ yyreduce:
            delete static_cast<TNode*>(yyvsp[-2]);
            printProductionRule(5);
          }
-#line 1237 "parser.tab.cpp"
+#line 1239 "parser.tab.cpp"
     break;
 
   case 8: /* Statement: Type ID ASSIGN Exp SC  */
-#line 88 "parser.ypp"
+#line 90 "parser.ypp"
          {
            checkVariableDeclaration(*tableStack, static_cast<IdentifierStr*>(yyvsp[-3])->id, yylineno);
            checkAssignment(static_cast<TNode*>(yyvsp[-4])->type, yyvsp[-1]->type, yylineno);
@@ -1248,11 +1250,11 @@ yyreduce:
            delete yyvsp[-1];
            printProductionRule(6);
          }
-#line 1252 "parser.tab.cpp"
+#line 1254 "parser.tab.cpp"
     break;
 
   case 9: /* Statement: ID ASSIGN Exp SC  */
-#line 99 "parser.ypp"
+#line 101 "parser.ypp"
          {
            string idType = getSymbolType(*tableStack, static_cast<IdentifierStr*>(yyvsp[-3])->id);
            if (idType.empty()) {
@@ -1264,26 +1266,26 @@ yyreduce:
            delete yyvsp[-1];
            printProductionRule(7);
          }
-#line 1268 "parser.tab.cpp"
+#line 1270 "parser.tab.cpp"
     break;
 
   case 10: /* Statement: Call SC  */
-#line 110 "parser.ypp"
+#line 112 "parser.ypp"
                    { printProductionRule(8); }
-#line 1274 "parser.tab.cpp"
+#line 1276 "parser.tab.cpp"
     break;
 
   case 11: /* Statement: RETURN SC  */
-#line 112 "parser.ypp"
+#line 114 "parser.ypp"
          {
            checkReturnStatement(*tableStack, "void", yylineno);
            printProductionRule(9);
          }
-#line 1283 "parser.tab.cpp"
+#line 1285 "parser.tab.cpp"
     break;
 
   case 12: /* Statement: IF LPAREN Exp RPAREN M_NEW_SCOPE Statement  */
-#line 117 "parser.ypp"
+#line 119 "parser.ypp"
          {
            string expType = getExpressionType(yyvsp[-3], *tableStack);
            if (!isBooleanType(expType)) {
@@ -1296,11 +1298,11 @@ yyreduce:
            delete yyvsp[-3];
            
          }
-#line 1300 "parser.tab.cpp"
+#line 1302 "parser.tab.cpp"
     break;
 
   case 13: /* Statement: IF LPAREN Exp RPAREN M_NEW_SCOPE Statement ELSE M_NEW_SCOPE Statement  */
-#line 130 "parser.ypp"
+#line 132 "parser.ypp"
          {
            string expType = getExpressionType(yyvsp[-6], *tableStack);
            if (!isBooleanType(expType)) {
@@ -1314,11 +1316,11 @@ yyreduce:
            printProductionRule(11);
            delete yyvsp[-6];
          }
-#line 1318 "parser.tab.cpp"
+#line 1320 "parser.tab.cpp"
     break;
 
   case 14: /* Statement: WHILE LPAREN Exp RPAREN M_NEW_SCOPE_LOOP Statement  */
-#line 144 "parser.ypp"
+#line 146 "parser.ypp"
          {
            string expType = getExpressionType(yyvsp[-3], *tableStack);
            if (!isBooleanType(expType)) {
@@ -1331,51 +1333,50 @@ yyreduce:
            printProductionRule(12);
            delete yyvsp[-3];
          }
-#line 1335 "parser.tab.cpp"
+#line 1337 "parser.tab.cpp"
     break;
 
   case 15: /* Statement: BREAK SC  */
-#line 157 "parser.ypp"
+#line 159 "parser.ypp"
          {
            checkBreakStatement(loopDepth, yylineno);
            printProductionRule(13);
          }
-#line 1344 "parser.tab.cpp"
+#line 1346 "parser.tab.cpp"
     break;
 
   case 16: /* Statement: CONTINUE SC  */
-#line 162 "parser.ypp"
+#line 164 "parser.ypp"
          {
            checkContinueStatement(loopDepth, yylineno);
            printProductionRule(14);
          }
-#line 1353 "parser.tab.cpp"
+#line 1355 "parser.tab.cpp"
     break;
 
   case 17: /* M_NEW_SCOPE: %empty  */
-#line 169 "parser.ypp"
+#line 171 "parser.ypp"
            {
              createNewScope(*tableStack);
              offsettStack->push_offset(offsettStack->top_offset(yylineno));
            }
-#line 1362 "parser.tab.cpp"
+#line 1364 "parser.tab.cpp"
     break;
 
   case 18: /* M_NEW_SCOPE_LOOP: %empty  */
-#line 176 "parser.ypp"
+#line 178 "parser.ypp"
                 {
                   createNewScope(*tableStack);
                   offsettStack->push_offset(offsettStack->top_offset(yylineno));
                   loopDepth++;
                 }
-#line 1372 "parser.tab.cpp"
+#line 1374 "parser.tab.cpp"
     break;
 
   case 19: /* Call: ID LPAREN Exp RPAREN  */
-#line 185 "parser.ypp"
+#line 187 "parser.ypp"
     {
       string funcName = static_cast<IdentifierStr*>(yyvsp[-3])->id;
-      vector<string> argTypes = {yyvsp[-1]->type};
       
       // Check if the function exists
       tableEntry* entry = nullptr;
@@ -1390,7 +1391,7 @@ yyreduce:
         output::errorUndefFunc(yylineno, funcName);
         exit(0);
       }
-
+    //  cout<<"entry->type is : "<<entry->type<<endl;////////delete
       // Check if the entry is a function
       if (entry->type != "function") {
         output::errorUndefFunc(yylineno, funcName);
@@ -1398,7 +1399,17 @@ yyreduce:
       }
 
       // Now we know it's a function, we can safely cast it
-      functions* func = static_cast<functions*>(entry);
+       functions* func = dynamic_cast<functions*>(entry);
+    if (!func) {
+        cout<<"debug line 212 parser.ypp"<<endl;/////delete
+        output::errorUndefFunc(yylineno, funcName);
+        exit(0);
+    }
+ /*   cout<<"func->ret_type: "<<func->ret_type<<endl; ///delete
+    cout<<"func->name: "<<func->name<<endl; /////delete
+    cout<<"func->isoverride: "<<func->isOverride<<endl;/////delete
+     cout<<"func->allargs: "<<func->all_arg[0]<<" , "<<func->all_arg[1]<<endl;/////delete
+   */ 
 
       bool matchFound = false;
         for (const auto& paramType : func->all_arg) {
@@ -1413,43 +1424,43 @@ yyreduce:
             exit(0);
         }
       // Create the expression node with the function's return type
-      cout<<"func->ret_type:"<<func->ret_type<<endl;
+     // cout<<"func->ret_type: "<<func->ret_type<<endl; //////////////////////////delete
       yyval = new ExpNode(func->ret_type);
-      cout<<yyval->type<<endl;
+     // cout<<$$->type<<endl; /////////////////////delete
       printProductionRule(15);
       
       delete static_cast<IdentifierStr*>(yyvsp[-3]);
       delete yyvsp[-1];
     }
-#line 1425 "parser.tab.cpp"
+#line 1436 "parser.tab.cpp"
     break;
 
   case 20: /* Type: INT  */
-#line 236 "parser.ypp"
+#line 247 "parser.ypp"
           { yyval=new TNode("int"); printProductionRule(16); }
-#line 1431 "parser.tab.cpp"
+#line 1442 "parser.tab.cpp"
     break;
 
   case 21: /* Type: BYTE  */
-#line 237 "parser.ypp"
+#line 248 "parser.ypp"
            { yyval=new TNode("byte"); printProductionRule(17); }
-#line 1437 "parser.tab.cpp"
+#line 1448 "parser.tab.cpp"
     break;
 
   case 22: /* Type: BOOL  */
-#line 238 "parser.ypp"
+#line 249 "parser.ypp"
            { yyval=new TNode("bool"); printProductionRule(18); }
-#line 1443 "parser.tab.cpp"
+#line 1454 "parser.tab.cpp"
     break;
 
   case 23: /* Exp: LPAREN Exp RPAREN  */
-#line 241 "parser.ypp"
+#line 252 "parser.ypp"
                        { yyval = yyvsp[-1]; printProductionRule(19);}
-#line 1449 "parser.tab.cpp"
+#line 1460 "parser.tab.cpp"
     break;
 
   case 24: /* Exp: Exp additive Exp  */
-#line 243 "parser.ypp"
+#line 254 "parser.ypp"
      { 
        checkNumericExpression(yyvsp[-2], *tableStack);
        checkNumericExpression(yyvsp[0], *tableStack);
@@ -1459,11 +1470,11 @@ yyreduce:
        yyval = new ExpNode(type1 == "int" || type2 == "int" ? "int" : "byte");
        printProductionRule(20);
      }
-#line 1463 "parser.tab.cpp"
+#line 1474 "parser.tab.cpp"
     break;
 
   case 25: /* Exp: Exp multiplicative Exp  */
-#line 253 "parser.ypp"
+#line 264 "parser.ypp"
      { 
        checkNumericExpression(yyvsp[-2], *tableStack);
        checkNumericExpression(yyvsp[0], *tableStack);
@@ -1472,11 +1483,11 @@ yyreduce:
        yyval = new ExpNode(type1 == "int" || type2 == "int" ? "int" : "byte");
        printProductionRule(20);
      }
-#line 1476 "parser.tab.cpp"
+#line 1487 "parser.tab.cpp"
     break;
 
   case 26: /* Exp: ID  */
-#line 262 "parser.ypp"
+#line 273 "parser.ypp"
      { 
        string type = getSymbolType(*tableStack, static_cast<IdentifierStr*>(yyvsp[0])->id);
        if(type.empty()) {
@@ -1486,23 +1497,23 @@ yyreduce:
        yyval = new ExpNode(type);
        printProductionRule(21);
      }
-#line 1490 "parser.tab.cpp"
+#line 1501 "parser.tab.cpp"
     break;
 
   case 27: /* Exp: Call  */
-#line 271 "parser.ypp"
+#line 282 "parser.ypp"
           { yyval = yyvsp[0]; printProductionRule(22);  }
-#line 1496 "parser.tab.cpp"
+#line 1507 "parser.tab.cpp"
     break;
 
   case 28: /* Exp: NUM  */
-#line 272 "parser.ypp"
+#line 283 "parser.ypp"
          { yyval = new ExpNode("int"); printProductionRule(23);}
-#line 1502 "parser.tab.cpp"
+#line 1513 "parser.tab.cpp"
     break;
 
   case 29: /* Exp: NUM B  */
-#line 274 "parser.ypp"
+#line 285 "parser.ypp"
      { 
        int value = static_cast<Num*>(yyvsp[-1])->num;
        if(!isLegalByteValue(value)) {
@@ -1512,96 +1523,96 @@ yyreduce:
        yyval = new ExpNode("byte");
        printProductionRule(24);
      }
-#line 1516 "parser.tab.cpp"
+#line 1527 "parser.tab.cpp"
     break;
 
   case 30: /* Exp: STRING  */
-#line 283 "parser.ypp"
+#line 294 "parser.ypp"
             { yyval = new ExpNode("string");printProductionRule(25); }
-#line 1522 "parser.tab.cpp"
+#line 1533 "parser.tab.cpp"
     break;
 
   case 31: /* Exp: TRUE  */
-#line 284 "parser.ypp"
+#line 295 "parser.ypp"
           { yyval = new ExpNode("bool"); }
-#line 1528 "parser.tab.cpp"
+#line 1539 "parser.tab.cpp"
     break;
 
   case 32: /* Exp: FALSE  */
-#line 285 "parser.ypp"
+#line 296 "parser.ypp"
            { yyval = new ExpNode("bool"); }
-#line 1534 "parser.tab.cpp"
+#line 1545 "parser.tab.cpp"
     break;
 
   case 33: /* Exp: NOT Exp  */
-#line 287 "parser.ypp"
+#line 298 "parser.ypp"
      { 
        checkBooleanExpression(yyvsp[0], *tableStack);
        yyval = new ExpNode("bool");
        printProductionRule(28);
      }
-#line 1544 "parser.tab.cpp"
+#line 1555 "parser.tab.cpp"
     break;
 
   case 34: /* Exp: Exp AND Exp  */
-#line 293 "parser.ypp"
+#line 304 "parser.ypp"
      { 
        checkBooleanExpression(yyvsp[-2], *tableStack);
        checkBooleanExpression(yyvsp[0], *tableStack);
        yyval = new ExpNode("bool");
        printProductionRule(29);
      }
-#line 1555 "parser.tab.cpp"
+#line 1566 "parser.tab.cpp"
     break;
 
   case 35: /* Exp: Exp OR Exp  */
-#line 300 "parser.ypp"
+#line 311 "parser.ypp"
      { 
        checkBooleanExpression(yyvsp[-2], *tableStack);
        checkBooleanExpression(yyvsp[0], *tableStack);
        yyval = new ExpNode("bool");
        printProductionRule(30);
      }
-#line 1566 "parser.tab.cpp"
+#line 1577 "parser.tab.cpp"
     break;
 
   case 36: /* Exp: Exp equality Exp  */
-#line 307 "parser.ypp"
+#line 318 "parser.ypp"
      { 
        checkTypeMismatch(yyvsp[-2]->type, yyvsp[0]->type, "equality", yylineno);
-       yyval = new ExpNode("bool");
-       printProductionRule(31);
-     }
-#line 1576 "parser.tab.cpp"
-    break;
-
-  case 37: /* Exp: Exp relational Exp  */
-#line 313 "parser.ypp"
-     { 
-       checkNumericExpression(yyvsp[-2], *tableStack);
-       checkNumericExpression(yyvsp[0], *tableStack);
        yyval = new ExpNode("bool");
        printProductionRule(31);
      }
 #line 1587 "parser.tab.cpp"
     break;
 
+  case 37: /* Exp: Exp relational Exp  */
+#line 324 "parser.ypp"
+     { 
+       checkNumericExpression(yyvsp[-2], *tableStack);
+       checkNumericExpression(yyvsp[0], *tableStack);
+       yyval = new ExpNode("bool");
+       printProductionRule(31);
+     }
+#line 1598 "parser.tab.cpp"
+    break;
+
   case 38: /* Exp: LPAREN Type RPAREN Exp  */
-#line 320 "parser.ypp"
+#line 331 "parser.ypp"
      { 
        string targetType = static_cast<TNode*>(yyvsp[-2])->type;
-       if(!isTypeCompatible(targetType, yyvsp[0]->type)) {
+       if(!isTypeCompatible(targetType, yyvsp[0]->type,true)) {
          output::errorMismatch(yylineno);
          exit(0);
        }
        yyval = new ExpNode(targetType);
        printProductionRule(32);
      }
-#line 1601 "parser.tab.cpp"
+#line 1612 "parser.tab.cpp"
     break;
 
 
-#line 1605 "parser.tab.cpp"
+#line 1616 "parser.tab.cpp"
 
       default: break;
     }
@@ -1795,7 +1806,7 @@ yyreturn:
   return yyresult;
 }
 
-#line 348 "parser.ypp"
+#line 359 "parser.ypp"
 
 /*int main(){
     yydebug = 1; 

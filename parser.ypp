@@ -49,8 +49,8 @@ Program: M1 Statements
 
 M1: %empty
   {
-    createNewScope(*tableStack);  // Create global scope
-    offsettStack->push_offset(0);  // Initialize offset stack for global scope
+    //createNewScope(*tableStack);  // Create global scope //check
+    //offsettStack->push_offset(0);  // Initialize offset stack for global scope // check
 
     vector<string> printParmType = {"string"};
     addFunctionToGlobalScope(*tableStack, "print", "void", printParmType);
@@ -58,15 +58,19 @@ M1: %empty
     vector<string> printiParmType = {"int","byte"};
     addFunctionToGlobalScope(*tableStack, "printi", "void", printiParmType);
     
-    vector<string> readiParmType = {"int","byte"};  // readi takes an int parameter
+    vector<string> readiParmType = {"int","byte"};  
     addFunctionToGlobalScope(*tableStack, "readi", "int", readiParmType);
   }
   ;
 
 //////////////////////////////////////////////////////////////////////////////////
 
-Statements: Statement { printProductionRule(2); }
-          | Statements Statement { printProductionRule(3); }
+Statements: Statement { printProductionRule(2);
+                        // Debug: Ensure no type checks are done here directly.
+              cout << "Reducing Statements -> Statements Statement at line " << yylineno << endl; } ///////delete }
+          | Statements Statement { printProductionRule(3);
+                        // Debug: Ensure no type checks are done here directly.
+              cout << "Reducing Statements -> Statements Statement at line " << yylineno << endl; } ///////delete
           ;
 
 Statement: LBRACE M_NEW_SCOPE Statements RBRACE 
@@ -184,7 +188,6 @@ M_NEW_SCOPE_LOOP: %empty
 Call: ID LPAREN Exp RPAREN
     {
       string funcName = static_cast<IdentifierStr*>($1)->id;
-      vector<string> argTypes = {$3->type};
       
       // Check if the function exists
       tableEntry* entry = nullptr;
@@ -199,7 +202,7 @@ Call: ID LPAREN Exp RPAREN
         output::errorUndefFunc(yylineno, funcName);
         exit(0);
       }
-
+    //  cout<<"entry->type is : "<<entry->type<<endl;////////delete
       // Check if the entry is a function
       if (entry->type != "function") {
         output::errorUndefFunc(yylineno, funcName);
@@ -207,7 +210,17 @@ Call: ID LPAREN Exp RPAREN
       }
 
       // Now we know it's a function, we can safely cast it
-      functions* func = static_cast<functions*>(entry);
+       functions* func = dynamic_cast<functions*>(entry);
+    if (!func) {
+        cout<<"debug line 212 parser.ypp"<<endl;/////delete
+        output::errorUndefFunc(yylineno, funcName);
+        exit(0);
+    }
+ /*   cout<<"func->ret_type: "<<func->ret_type<<endl; ///delete
+    cout<<"func->name: "<<func->name<<endl; /////delete
+    cout<<"func->isoverride: "<<func->isOverride<<endl;/////delete
+     cout<<"func->allargs: "<<func->all_arg[0]<<" , "<<func->all_arg[1]<<endl;/////delete
+   */ 
 
       bool matchFound = false;
         for (const auto& paramType : func->all_arg) {
@@ -222,9 +235,9 @@ Call: ID LPAREN Exp RPAREN
             exit(0);
         }
       // Create the expression node with the function's return type
-      cout<<"func->ret_type:"<<func->ret_type<<endl;
+     // cout<<"func->ret_type: "<<func->ret_type<<endl; //////////////////////////delete
       $$ = new ExpNode(func->ret_type);
-      cout<<$$->type<<endl;
+     // cout<<$$->type<<endl; /////////////////////delete
       printProductionRule(15);
       
       delete static_cast<IdentifierStr*>($1);
@@ -319,7 +332,7 @@ Exp: LPAREN Exp RPAREN { $$ = $2; printProductionRule(19);}
    | LPAREN Type RPAREN Exp 
      { 
        string targetType = static_cast<TNode*>($2)->type;
-       if(!isTypeCompatible(targetType, $4->type)) {
+       if(!isTypeCompatible(targetType, $4->type,true)) {
          output::errorMismatch(yylineno);
          exit(0);
        }

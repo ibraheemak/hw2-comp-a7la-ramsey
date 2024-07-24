@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 #include "hw3_output.hpp"
-
+#include <iostream>
 using namespace std;
 
 
@@ -86,7 +86,7 @@ public:
     functions(const string& name, const string& type, int offset,
               vector<string> all_the_arg, string the_ret_type, bool isOverride)
         : tableEntry(name, "function", offset), all_arg(all_the_arg),
-          ret_type(ret_type), isOverride(isOverride) {}
+          ret_type(the_ret_type), isOverride(isOverride) {}
 };
 
 // scope entry for every new scope 
@@ -130,6 +130,7 @@ public:
                          const vector<string>& allArgs, const string& retType, 
                         bool isOverride = false) {
         functions* newFunc = new functions(name, type, offset, allArgs, retType, isOverride);
+        cout<<"retType for "<< newFunc->name<<" is : "<<newFunc->ret_type<<endl; /////delete
         curScope->scope.push_back(newFunc);
     }
 

@@ -39,10 +39,19 @@ string getExpressionType(const TNode* exp, TablesStack& tables) {
     exit(0);
 }
 
-bool isTypeCompatible(const string& type1, const string& type2) {
+bool isTypeCompatible(const string& type1, const string& type2,bool explicitCast) {
     if (type1 == type2) {
         return true;
     }
+    if(explicitCast){
+            if (type1 == "int" && type2 == "byte") 
+        return true;
+
+            if (type1 == "byte" && type2 == "int")
+        return true;
+    
+    }
+    
     if (type1 == "int" && type2 == "byte") {
         return true;
     }

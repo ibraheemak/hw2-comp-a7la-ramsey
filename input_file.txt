@@ -1,1 +1,1 @@
-int x = readi(5);
+byte y = (byte)readi(4);
