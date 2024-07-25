@@ -43,7 +43,7 @@
 Program: M1 Statements 
        {
          checkMainFunction(*tableStack);
-         exitScope(*tableStack);
+
          printProductionRule(1);
        }
        ;
@@ -339,6 +339,10 @@ Exp: LPAREN Exp RPAREN { $$ = $2; printProductionRule(19); global_exp_type=$$->t
    | LPAREN Type RPAREN Exp 
      { 
        string targetType = static_cast<TNode*>($2)->type;
+       if( targetType != "int" && targetType !="byte"){
+        output::errorMismatch(yylineno);
+         exit(0);
+       }
        if(!isTypeCompatible(targetType, $4->type,true)) {
          output::errorMismatch(yylineno);
          exit(0);
@@ -367,12 +371,13 @@ Exp: LPAREN Exp RPAREN { $$ = $2; printProductionRule(19); global_exp_type=$$->t
 
 
 %%
-/*int main(){
-    yydebug = 1; 
-    return yyparse();
+int main(){
+    // yydebug = 1; 
+    yyparse();
+    exitScope(*tableStack);
+    return 0;
 
 }
-*/
 void yyerror(const char*){
     errorSyn(yylineno);
     exit(0);
