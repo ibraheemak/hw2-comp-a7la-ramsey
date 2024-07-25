@@ -1,0 +1,1042 @@
+Debug: Starting program execution
+retType for print is : void
+retType for printi is : void
+retType for readi is : int
+16: Type -> INT
+5: Statement -> Type ID SC
+2: Statements -> Statement
+Reducing Statements -> Statements Statement at line 1
+17: Type -> BYTE
+5: Statement -> Type ID SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 2
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+---end scope---
+10: Statement -> IF LPAREN Exp RPAREN Statement
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 5
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+2: Statements -> Statement
+Reducing Statements -> Statements Statement at line 7
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+2: Statements -> Statement
+Reducing Statements -> Statements Statement at line 10
+25: Exp -> STRING
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 11
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 12
+24: Exp -> NUM B
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 13
+21: Exp -> ID
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 14
+21: Exp -> ID
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 15
+4: Statement -> LBRACE Statements RBRACE
+---end scope---
+---end scope---
+10: Statement -> IF LPAREN Exp RPAREN Statement
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 17
+4: Statement -> LBRACE Statements RBRACE
+---end scope---
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+---end scope---
+---end scope---
+11: Statement -> IF LPAREN Exp RPAREN Statement ELSE Statement
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 18
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+2: Statements -> Statement
+Reducing Statements -> Statements Statement at line 22
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+2: Statements -> Statement
+Reducing Statements -> Statements Statement at line 25
+25: Exp -> STRING
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 26
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 27
+24: Exp -> NUM B
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 28
+21: Exp -> ID
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 29
+21: Exp -> ID
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 30
+4: Statement -> LBRACE Statements RBRACE
+---end scope---
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+2: Statements -> Statement
+Reducing Statements -> Statements Statement at line 36
+25: Exp -> STRING
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 37
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 38
+24: Exp -> NUM B
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 39
+21: Exp -> ID
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 40
+21: Exp -> ID
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 41
+4: Statement -> LBRACE Statements RBRACE
+---end scope---
+---end scope---
+10: Statement -> IF LPAREN Exp RPAREN Statement
+2: Statements -> Statement
+Reducing Statements -> Statements Statement at line 43
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+---end scope---
+12: Statement -> WHILE LPAREN Exp RPAREN Statement
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 43
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+2: Statements -> Statement
+Reducing Statements -> Statements Statement at line 46
+25: Exp -> STRING
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 47
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 48
+24: Exp -> NUM B
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 49
+21: Exp -> ID
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 50
+21: Exp -> ID
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 51
+4: Statement -> LBRACE Statements RBRACE
+---end scope---
+---end scope---
+12: Statement -> WHILE LPAREN Exp RPAREN Statement
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 52
+4: Statement -> LBRACE Statements RBRACE
+---end scope---
+---end scope---
+---end scope---
+11: Statement -> IF LPAREN Exp RPAREN Statement ELSE Statement
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 53
+4: Statement -> LBRACE Statements RBRACE
+---end scope---
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+2: Statements -> Statement
+Reducing Statements -> Statements Statement at line 57
+25: Exp -> STRING
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 58
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 59
+24: Exp -> NUM B
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 60
+21: Exp -> ID
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 61
+21: Exp -> ID
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 62
+4: Statement -> LBRACE Statements RBRACE
+---end scope---
+---end scope---
+---end scope---
+11: Statement -> IF LPAREN Exp RPAREN Statement ELSE Statement
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 63
+16: Type -> INT
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+Debug: Checking assignment at line 65 with lhsType: int and rhsType: int
+6: Statement -> Type ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 65
+17: Type -> BYTE
+17: Type -> BYTE
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+32: Exp -> LPAREN Type RPAREN Exp
+Debug: Checking assignment at line 66 with lhsType: byte and rhsType: byte
+6: Statement -> Type ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 66
+16: Type -> INT
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+32: Exp -> LPAREN Type RPAREN Exp
+Debug: Checking assignment at line 67 with lhsType: int and rhsType: int
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 67
+17: Type -> BYTE
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+32: Exp -> LPAREN Type RPAREN Exp
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+Expression type: byte
+Expression type: int
+byte
+20: Exp -> Exp BINOP Exp
+Debug: Checking assignment at line 69 with lhsType: int and rhsType: int
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 69
+17: Type -> BYTE
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+Expression type: int
+Expression type: int
+int
+20: Exp -> Exp BINOP Exp
+19: Exp -> LPAREN Exp RPAREN
+32: Exp -> LPAREN Type RPAREN Exp
+Debug: Checking assignment at line 70 with lhsType: int and rhsType: byte
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 70
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+17: Type -> BYTE
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+32: Exp -> LPAREN Type RPAREN Exp
+Expression type: int
+Expression type: byte
+int
+20: Exp -> Exp BINOP Exp
+Debug: Checking assignment at line 71 with lhsType: int and rhsType: int
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 71
+17: Type -> BYTE
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+Expression type: int
+Expression type: int
+int
+20: Exp -> Exp BINOP Exp
+19: Exp -> LPAREN Exp RPAREN
+32: Exp -> LPAREN Type RPAREN Exp
+Debug: Checking assignment at line 72 with lhsType: int and rhsType: byte
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 72
+17: Type -> BYTE
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+17: Type -> BYTE
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+32: Exp -> LPAREN Type RPAREN Exp
+Expression type: int
+Expression type: byte
+int
+20: Exp -> Exp BINOP Exp
+19: Exp -> LPAREN Exp RPAREN
+32: Exp -> LPAREN Type RPAREN Exp
+Debug: Checking assignment at line 73 with lhsType: int and rhsType: byte
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 73
+17: Type -> BYTE
+17: Type -> BYTE
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+32: Exp -> LPAREN Type RPAREN Exp
+17: Type -> BYTE
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+32: Exp -> LPAREN Type RPAREN Exp
+Expression type: byte
+Expression type: byte
+byte
+20: Exp -> Exp BINOP Exp
+19: Exp -> LPAREN Exp RPAREN
+32: Exp -> LPAREN Type RPAREN Exp
+Debug: Checking assignment at line 74 with lhsType: int and rhsType: byte
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 74
+17: Type -> BYTE
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+17: Type -> BYTE
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+32: Exp -> LPAREN Type RPAREN Exp
+Expression type: int
+Expression type: byte
+int
+20: Exp -> Exp BINOP Exp
+19: Exp -> LPAREN Exp RPAREN
+32: Exp -> LPAREN Type RPAREN Exp
+Debug: Checking assignment at line 75 with lhsType: int and rhsType: byte
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 75
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+Expression type: int
+Expression type: int
+int
+20: Exp -> Exp BINOP Exp
+19: Exp -> LPAREN Exp RPAREN
+Debug: Checking assignment at line 76 with lhsType: int and rhsType: int
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 76
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+17: Type -> BYTE
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+32: Exp -> LPAREN Type RPAREN Exp
+Expression type: int
+Expression type: byte
+int
+20: Exp -> Exp BINOP Exp
+19: Exp -> LPAREN Exp RPAREN
+Debug: Checking assignment at line 77 with lhsType: int and rhsType: int
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 77
+17: Type -> BYTE
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+32: Exp -> LPAREN Type RPAREN Exp
+17: Type -> BYTE
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+32: Exp -> LPAREN Type RPAREN Exp
+Expression type: byte
+Expression type: byte
+byte
+20: Exp -> Exp BINOP Exp
+19: Exp -> LPAREN Exp RPAREN
+Debug: Checking assignment at line 78 with lhsType: int and rhsType: byte
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 78
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+17: Type -> BYTE
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+32: Exp -> LPAREN Type RPAREN Exp
+Expression type: int
+Expression type: byte
+int
+20: Exp -> Exp BINOP Exp
+19: Exp -> LPAREN Exp RPAREN
+Debug: Checking assignment at line 79 with lhsType: int and rhsType: int
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 79
+17: Type -> BYTE
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+Expression type: int
+Expression type: int
+int
+20: Exp -> Exp BINOP Exp
+19: Exp -> LPAREN Exp RPAREN
+32: Exp -> LPAREN Type RPAREN Exp
+Debug: Checking assignment at line 81 with lhsType: byte and rhsType: byte
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 81
+17: Type -> BYTE
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+Expression type: int
+Expression type: int
+int
+20: Exp -> Exp BINOP Exp
+19: Exp -> LPAREN Exp RPAREN
+32: Exp -> LPAREN Type RPAREN Exp
+Debug: Checking assignment at line 82 with lhsType: byte and rhsType: byte
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 82
+17: Type -> BYTE
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+17: Type -> BYTE
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+32: Exp -> LPAREN Type RPAREN Exp
+Expression type: int
+Expression type: byte
+int
+20: Exp -> Exp BINOP Exp
+19: Exp -> LPAREN Exp RPAREN
+32: Exp -> LPAREN Type RPAREN Exp
+Debug: Checking assignment at line 83 with lhsType: byte and rhsType: byte
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 83
+17: Type -> BYTE
+17: Type -> BYTE
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+32: Exp -> LPAREN Type RPAREN Exp
+17: Type -> BYTE
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+32: Exp -> LPAREN Type RPAREN Exp
+Expression type: byte
+Expression type: byte
+byte
+20: Exp -> Exp BINOP Exp
+19: Exp -> LPAREN Exp RPAREN
+32: Exp -> LPAREN Type RPAREN Exp
+Debug: Checking assignment at line 84 with lhsType: byte and rhsType: byte
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 84
+17: Type -> BYTE
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+17: Type -> BYTE
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+32: Exp -> LPAREN Type RPAREN Exp
+Expression type: int
+Expression type: byte
+int
+20: Exp -> Exp BINOP Exp
+19: Exp -> LPAREN Exp RPAREN
+32: Exp -> LPAREN Type RPAREN Exp
+Debug: Checking assignment at line 85 with lhsType: byte and rhsType: byte
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 85
+17: Type -> BYTE
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+32: Exp -> LPAREN Type RPAREN Exp
+17: Type -> BYTE
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+32: Exp -> LPAREN Type RPAREN Exp
+Expression type: byte
+Expression type: byte
+byte
+20: Exp -> Exp BINOP Exp
+19: Exp -> LPAREN Exp RPAREN
+Debug: Checking assignment at line 86 with lhsType: byte and rhsType: byte
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 86
+16: Type -> INT
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+32: Exp -> LPAREN Type RPAREN Exp
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+Expression type: int
+Expression type: int
+int
+20: Exp -> Exp BINOP Exp
+Debug: Checking assignment at line 88 with lhsType: int and rhsType: int
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 88
+16: Type -> INT
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+Expression type: int
+Expression type: int
+int
+20: Exp -> Exp BINOP Exp
+19: Exp -> LPAREN Exp RPAREN
+32: Exp -> LPAREN Type RPAREN Exp
+Debug: Checking assignment at line 89 with lhsType: int and rhsType: int
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 89
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+16: Type -> INT
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+32: Exp -> LPAREN Type RPAREN Exp
+Expression type: int
+Expression type: int
+int
+20: Exp -> Exp BINOP Exp
+Debug: Checking assignment at line 90 with lhsType: int and rhsType: int
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 90
+16: Type -> INT
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+Expression type: int
+Expression type: int
+int
+20: Exp -> Exp BINOP Exp
+19: Exp -> LPAREN Exp RPAREN
+32: Exp -> LPAREN Type RPAREN Exp
+Debug: Checking assignment at line 91 with lhsType: int and rhsType: int
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 91
+16: Type -> INT
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+16: Type -> INT
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+32: Exp -> LPAREN Type RPAREN Exp
+Expression type: int
+Expression type: int
+int
+20: Exp -> Exp BINOP Exp
+19: Exp -> LPAREN Exp RPAREN
+32: Exp -> LPAREN Type RPAREN Exp
+Debug: Checking assignment at line 92 with lhsType: int and rhsType: int
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 92
+16: Type -> INT
+16: Type -> INT
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+32: Exp -> LPAREN Type RPAREN Exp
+16: Type -> INT
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+32: Exp -> LPAREN Type RPAREN Exp
+Expression type: int
+Expression type: int
+int
+20: Exp -> Exp BINOP Exp
+19: Exp -> LPAREN Exp RPAREN
+32: Exp -> LPAREN Type RPAREN Exp
+Debug: Checking assignment at line 93 with lhsType: int and rhsType: int
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 93
+16: Type -> INT
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+16: Type -> INT
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+32: Exp -> LPAREN Type RPAREN Exp
+Expression type: int
+Expression type: int
+int
+20: Exp -> Exp BINOP Exp
+19: Exp -> LPAREN Exp RPAREN
+32: Exp -> LPAREN Type RPAREN Exp
+Debug: Checking assignment at line 94 with lhsType: int and rhsType: int
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 94
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+Expression type: int
+Expression type: int
+int
+20: Exp -> Exp BINOP Exp
+19: Exp -> LPAREN Exp RPAREN
+Debug: Checking assignment at line 95 with lhsType: int and rhsType: int
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 95
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+16: Type -> INT
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+32: Exp -> LPAREN Type RPAREN Exp
+Expression type: int
+Expression type: int
+int
+20: Exp -> Exp BINOP Exp
+19: Exp -> LPAREN Exp RPAREN
+Debug: Checking assignment at line 96 with lhsType: int and rhsType: int
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 96
+16: Type -> INT
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+32: Exp -> LPAREN Type RPAREN Exp
+16: Type -> INT
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+32: Exp -> LPAREN Type RPAREN Exp
+Expression type: int
+Expression type: int
+int
+20: Exp -> Exp BINOP Exp
+19: Exp -> LPAREN Exp RPAREN
+Debug: Checking assignment at line 97 with lhsType: int and rhsType: int
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 97
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+16: Type -> INT
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+22: Exp -> Call
+32: Exp -> LPAREN Type RPAREN Exp
+Expression type: int
+Expression type: int
+int
+20: Exp -> Exp BINOP Exp
+19: Exp -> LPAREN Exp RPAREN
+Debug: Checking assignment at line 98 with lhsType: int and rhsType: int
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 98
+16: Type -> INT
+23: Exp -> NUM
+23: Exp -> NUM
+Expression type: int
+Expression type: int
+int
+20: Exp -> Exp BINOP Exp
+Debug: Checking assignment at line 100 with lhsType: int and rhsType: int
+6: Statement -> Type ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 100
+24: Exp -> NUM B
+23: Exp -> NUM
+Expression type: byte
+Expression type: int
+byte
+20: Exp -> Exp BINOP Exp
+Debug: Checking assignment at line 101 with lhsType: int and rhsType: int
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 101
+23: Exp -> NUM
+24: Exp -> NUM B
+Expression type: int
+Expression type: byte
+int
+20: Exp -> Exp BINOP Exp
+Debug: Checking assignment at line 102 with lhsType: int and rhsType: int
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 102
+24: Exp -> NUM B
+24: Exp -> NUM B
+Expression type: byte
+Expression type: byte
+byte
+20: Exp -> Exp BINOP Exp
+Debug: Checking assignment at line 103 with lhsType: int and rhsType: byte
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 103
+17: Type -> BYTE
+24: Exp -> NUM B
+24: Exp -> NUM B
+Expression type: byte
+Expression type: byte
+byte
+20: Exp -> Exp BINOP Exp
+Debug: Checking assignment at line 105 with lhsType: byte and rhsType: byte
+6: Statement -> Type ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 105
+17: Type -> BYTE
+17: Type -> BYTE
+23: Exp -> NUM
+23: Exp -> NUM
+Expression type: int
+Expression type: int
+int
+20: Exp -> Exp BINOP Exp
+19: Exp -> LPAREN Exp RPAREN
+32: Exp -> LPAREN Type RPAREN Exp
+Debug: Checking assignment at line 106 with lhsType: byte and rhsType: byte
+6: Statement -> Type ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 106
+23: Exp -> NUM
+23: Exp -> NUM
+Expression type: int
+Expression type: int
+20: Exp -> Exp BINOP Exp
+Debug: Checking assignment at line 108 with lhsType: int and rhsType: int
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 108
+24: Exp -> NUM B
+23: Exp -> NUM
+Expression type: byte
+Expression type: int
+20: Exp -> Exp BINOP Exp
+Debug: Checking assignment at line 109 with lhsType: int and rhsType: int
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 109
+23: Exp -> NUM
+24: Exp -> NUM B
+Expression type: int
+Expression type: byte
+20: Exp -> Exp BINOP Exp
+Debug: Checking assignment at line 110 with lhsType: int and rhsType: int
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 110
+24: Exp -> NUM B
+24: Exp -> NUM B
+Expression type: byte
+Expression type: byte
+20: Exp -> Exp BINOP Exp
+Debug: Checking assignment at line 111 with lhsType: int and rhsType: byte
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 111
+23: Exp -> NUM
+23: Exp -> NUM
+Expression type: int
+Expression type: int
+20: Exp -> Exp BINOP Exp
+Debug: Checking assignment at line 113 with lhsType: int and rhsType: int
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 113
+24: Exp -> NUM B
+23: Exp -> NUM
+Expression type: byte
+Expression type: int
+20: Exp -> Exp BINOP Exp
+Debug: Checking assignment at line 114 with lhsType: int and rhsType: int
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 114
+23: Exp -> NUM
+24: Exp -> NUM B
+Expression type: int
+Expression type: byte
+20: Exp -> Exp BINOP Exp
+Debug: Checking assignment at line 115 with lhsType: int and rhsType: int
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 115
+24: Exp -> NUM B
+24: Exp -> NUM B
+Expression type: byte
+Expression type: byte
+20: Exp -> Exp BINOP Exp
+Debug: Checking assignment at line 116 with lhsType: int and rhsType: byte
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 116
+23: Exp -> NUM
+23: Exp -> NUM
+Expression type: int
+Expression type: int
+int
+20: Exp -> Exp BINOP Exp
+Debug: Checking assignment at line 118 with lhsType: int and rhsType: int
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 118
+24: Exp -> NUM B
+23: Exp -> NUM
+Expression type: byte
+Expression type: int
+byte
+20: Exp -> Exp BINOP Exp
+Debug: Checking assignment at line 119 with lhsType: int and rhsType: int
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 119
+23: Exp -> NUM
+24: Exp -> NUM B
+Expression type: int
+Expression type: byte
+int
+20: Exp -> Exp BINOP Exp
+Debug: Checking assignment at line 120 with lhsType: int and rhsType: int
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 120
+24: Exp -> NUM B
+24: Exp -> NUM B
+Expression type: byte
+Expression type: byte
+byte
+20: Exp -> Exp BINOP Exp
+Debug: Checking assignment at line 121 with lhsType: int and rhsType: byte
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 121
+24: Exp -> NUM B
+24: Exp -> NUM B
+Expression type: byte
+Expression type: byte
+20: Exp -> Exp BINOP Exp
+Debug: Checking assignment at line 123 with lhsType: byte and rhsType: byte
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 123
+17: Type -> BYTE
+23: Exp -> NUM
+23: Exp -> NUM
+Expression type: int
+Expression type: int
+20: Exp -> Exp BINOP Exp
+19: Exp -> LPAREN Exp RPAREN
+32: Exp -> LPAREN Type RPAREN Exp
+Debug: Checking assignment at line 124 with lhsType: byte and rhsType: byte
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 124
+24: Exp -> NUM B
+24: Exp -> NUM B
+Expression type: byte
+Expression type: byte
+20: Exp -> Exp BINOP Exp
+Debug: Checking assignment at line 126 with lhsType: byte and rhsType: byte
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 126
+17: Type -> BYTE
+23: Exp -> NUM
+23: Exp -> NUM
+Expression type: int
+Expression type: int
+20: Exp -> Exp BINOP Exp
+19: Exp -> LPAREN Exp RPAREN
+32: Exp -> LPAREN Type RPAREN Exp
+Debug: Checking assignment at line 127 with lhsType: byte and rhsType: byte
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 127
+24: Exp -> NUM B
+24: Exp -> NUM B
+Expression type: byte
+Expression type: byte
+byte
+20: Exp -> Exp BINOP Exp
+Debug: Checking assignment at line 129 with lhsType: byte and rhsType: byte
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 129
+17: Type -> BYTE
+23: Exp -> NUM
+23: Exp -> NUM
+Expression type: int
+Expression type: int
+int
+20: Exp -> Exp BINOP Exp
+19: Exp -> LPAREN Exp RPAREN
+32: Exp -> LPAREN Type RPAREN Exp
+Debug: Checking assignment at line 130 with lhsType: byte and rhsType: byte
+7: Statement -> ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 130
+18: Type -> BOOL
+Debug: Checking assignment at line 132 with lhsType: bool and rhsType: bool
+6: Statement -> Type ID ASSIGN Exp SC
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 132
+21: Exp -> ID
+29: Exp -> Exp AND Exp
+29: Exp -> Exp AND Exp
+30: Exp -> Exp OR Exp
+23: Exp -> NUM
+15: Call -> ID LPAREN Exp RPAREN
+8: Statement -> Call SC
+---end scope---
+10: Statement -> IF LPAREN Exp RPAREN Statement
+3: Statements -> Statements Statement
+Reducing Statements -> Statements Statement at line 133
+print, function
+printi, function
+readi, function
+z, int
+t, byte
+x, int
+y, byte
+a, int
+b1, byte
+b2, byte
+bol, bool
+Error: No 'main' function found in global scope
+---end scope---
+print (string)->void 0
+printi (int,byte)->void 0
+readi (int,byte)->int 0
+z int 0
+t byte 1
+x int 2
+y byte 3
+a int 4
+b1 byte 5
+b2 byte 6
+bol bool 7
+1: Program -> Statements
+Debug: Ending program execution

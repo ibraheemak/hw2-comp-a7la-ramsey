@@ -14,7 +14,7 @@
     TablesStack* tableStack=new TablesStack;
     offsetStack* offsettStack=new offsetStack;
     #define YYERROR_VERBOSE 1 
-    #define YYDEBUG 1
+    /* //for tests:  #define YYDEBUG 1 */
 %}
 
 
@@ -55,10 +55,10 @@ M1: %empty
     vector<string> printParmType = {"string"};
     addFunctionToGlobalScope(*tableStack, "print", "void", printParmType);
     
-    vector<string> printiParmType = {"int","byte"};
+    vector<string> printiParmType = {"int"};
     addFunctionToGlobalScope(*tableStack, "printi", "void", printiParmType);
     
-    vector<string> readiParmType = {"int","byte"};  
+    vector<string> readiParmType = {"int"};  
     addFunctionToGlobalScope(*tableStack, "readi", "int", readiParmType);
   }
   ;
@@ -67,10 +67,13 @@ M1: %empty
 
 Statements: Statement { printProductionRule(2);
                         // Debug: Ensure no type checks are done here directly.
-              cout << "Reducing Statements -> Statements Statement at line " << yylineno << endl; } ///////delete }
+              //for tests: cout << "Reducing Statements -> Statements Statement at line " << yylineno << endl; 
+              } ///////delete }
           | Statements Statement { printProductionRule(3);
                         // Debug: Ensure no type checks are done here directly.
-              cout << "Reducing Statements -> Statements Statement at line " << yylineno << endl; } ///////delete
+              //for tests: cout << "Reducing Statements -> Statements Statement at line " << yylineno << endl; 
+              } ///////delete
+
           ;
 
 Statement: LBRACE M_NEW_SCOPE Statements RBRACE 
@@ -117,30 +120,25 @@ Statement: LBRACE M_NEW_SCOPE Statements RBRACE
            checkReturnStatement(*tableStack, "void", yylineno);
            printProductionRule(9);
          }
-         | IF LPAREN Exp RPAREN M_NEW_SCOPE Statement
+         | IF LPAREN Exp RPAREN M_NEW_SCOPE Statement CLOSE_SCOPE
          {
            string expType = getExpressionType($3, *tableStack);
            if (!isBooleanType(expType)) {
              output::errorMismatch(yylineno);
              exit(0);
            }
-           exitScope(*tableStack);
-           offsettStack->pop_offset(yylineno);
+
            printProductionRule(10);
            delete $3;
            
          }
-         | IF LPAREN Exp RPAREN M_NEW_SCOPE Statement ELSE M_NEW_SCOPE Statement
+         | IF LPAREN Exp RPAREN M_NEW_SCOPE Statement CLOSE_SCOPE ELSE M_NEW_SCOPE Statement CLOSE_SCOPE
          {
            string expType = getExpressionType($3, *tableStack);
            if (!isBooleanType(expType)) {
              output::errorMismatch(yylineno);
              exit(0);
            }
-           exitScope(*tableStack);
-           offsettStack->pop_offset(yylineno);
-           exitScope(*tableStack);
-           offsettStack->pop_offset(yylineno);
            printProductionRule(11);
            delete $3;
          }
@@ -168,6 +166,11 @@ Statement: LBRACE M_NEW_SCOPE Statements RBRACE
            printProductionRule(14);
          }
          ;
+CLOSE_SCOPE: %empty
+           {
+             exitScope(*tableStack);
+             offsettStack->pop_offset(yylineno);
+           };
 
 M_NEW_SCOPE: %empty
            {
@@ -188,7 +191,9 @@ M_NEW_SCOPE_LOOP: %empty
 Call: ID LPAREN Exp RPAREN
     {
       string funcName = static_cast<IdentifierStr*>($1)->id;
-      
+      string argType = $3->type;  // This will be "int" in your example
+      vector<string> argTypes = {argType};
+      $$ = checkFunctionCall(*tableStack, funcName, argTypes, yylineno);
       // Check if the function exists
       tableEntry* entry = nullptr;
       for (const auto& e : tableStack->ParentScope->scope) {
@@ -212,7 +217,7 @@ Call: ID LPAREN Exp RPAREN
       // Now we know it's a function, we can safely cast it
        functions* func = dynamic_cast<functions*>(entry);
     if (!func) {
-        cout<<"debug line 212 parser.ypp"<<endl;/////delete
+        //for tests: cout<<"debug line 212 parser.ypp"<<endl;/////delete
         output::errorUndefFunc(yylineno, funcName);
         exit(0);
     }
@@ -258,7 +263,7 @@ Exp: LPAREN Exp RPAREN { $$ = $2; printProductionRule(19);}
        checkNumericExpression($3, *tableStack);
        string type1 = $1->type;
        string type2 = $3->type;
-       cout << type1 <<endl;
+       //for tests: cout << type1 <<endl;
        $$ = new ExpNode(type1 == "int" || type2 == "int" ? "int" : "byte");
        printProductionRule(20);
      }

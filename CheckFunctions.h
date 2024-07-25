@@ -22,7 +22,7 @@ void checkNumericExpression(const TNode* exp, TablesStack& tables);
 void checkVariableDeclaration(TablesStack& tableStack, const string& name, int lineno);
 void checkFunctionDeclaration(TablesStack& tableStack, const string& name, int lineno);
 void checkAssignment(const string& lhsType, const string& rhsType, int lineno);
-void checkFunctionCall(TablesStack& tableStack, const string& funcName, const vector<string>& argTypes, int lineno);
+ExpNode* checkFunctionCall(TablesStack& tableStack, const string& funcName, const vector<string>& argTypes, int lineno);
 void checkReturnStatement(TablesStack& tableStack, const string& returnType, int lineno);
 
 // control flow checking functions

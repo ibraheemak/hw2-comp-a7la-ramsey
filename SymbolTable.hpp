@@ -6,7 +6,14 @@
 #include "hw3_output.hpp"
 #include <iostream>
 using namespace std;
+#include <algorithm>
+#include <string>
 
+inline std::string toUpper(std::string s) {
+    std::transform(s.begin(), s.end(), s.begin(), 
+                   [](unsigned char c){ return std::toupper(c); });
+    return s;
+}
 
 // offset stack to keep track as in the tutorials - t6
 class offsetStack {
@@ -130,7 +137,7 @@ public:
                          const vector<string>& allArgs, const string& retType, 
                         bool isOverride = false) {
         functions* newFunc = new functions(name, type, offset, allArgs, retType, isOverride);
-        cout<<"retType for "<< newFunc->name<<" is : "<<newFunc->ret_type<<endl; /////delete
+        //for tests: cout<<"retType for "<< newFunc->name<<" is : "<<newFunc->ret_type<<endl; /////delete
         curScope->scope.push_back(newFunc);
     }
 

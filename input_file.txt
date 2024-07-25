@@ -1,1 +1,3 @@
-byte y = (byte)readi(4);
+if (true){int q;}
+;;
+if (true){int q;}

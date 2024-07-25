@@ -21,24 +21,42 @@ using namespace std;
 
 
 
-int main(int argc, char* argv[]) {
-    if (argc != 2) {
-        cerr << "Usage: " << argv[0] << " <input file>" << endl;
-        return 1;
-    }
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include "parser.tab.hpp"
+#include "source.hpp"
+#include "hw3_output.hpp"
 
-    // Open the input file
-    yyin = fopen(argv[1], "r");
-    if (!yyin) {
-        cerr << "Error opening file: " << argv[1] << endl;
+extern int yyparse();
+extern FILE* yyin;
+
+int main(int argc, char* argv[]) {
+    //for tests: std::cout << "Debug: Starting program execution" << std::endl;
+
+    if (argc == 2) {
+        // Input from file specified as command-line argument
+        yyin = fopen(argv[1], "r");
+        if (!yyin) {
+            std::cerr << "Error opening file: " << argv[1] << std::endl;
+            return 1;
+        }
+    } else if (argc == 1) {
+        // No arguments, use stdin
+        yyin = stdin;
+    } else {
+        std::cerr << "Usage: " << argv[0] << " [<input file>]" << std::endl;
         return 1;
     }
 
     // Run the parser
     yyparse();
 
-    // Close the input file
-    fclose(yyin);
- cout << "Finished parsing" << endl; // Debug print statement
+    // Close the input file if we opened one
+    if (argc == 2) {
+        fclose(yyin);
+    }
+
+    //for tests: std::cout << "Debug: Ending program execution" << std::endl;
     return 0;
 }

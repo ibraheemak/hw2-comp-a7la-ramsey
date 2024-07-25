@@ -78,6 +78,7 @@ bool isBooleanType(const string& type) {
 
 void checkTypeMismatch(const string& expected, const string& actual, const string& name, int lineno) {
     if (!isTypeCompatible(expected, actual)) {
+        //for tests: cout << expected << ", " << actual << ", " << name << endl;
         output::errorMismatch(lineno);
         exit(0);
     }
@@ -92,9 +93,9 @@ void checkTypeMismatch(const string& expected, const string& actual, const strin
 }*/
 void checkNumericExpression(const TNode* exp, TablesStack& tables) {
     string type = getExpressionType(exp, tables);
-    std::cout << "Expression type: " << type << endl;
+    //for tests: std::cout << "Expression type: " << type << endl;
     if (!isNumericType(type)) {
-    std::cout << "Not a numeric type!" << endl;
+    //for tests: std::cout << "Not a numeric type!" << endl;
         output::errorMismatch(yylineno);
         exit(0);
     }
@@ -125,18 +126,23 @@ void checkMainFunction(TablesStack& tables) {
     bool mainFound = false;
 
     for (const auto& entry : globalScope->scope) {
+        //for tests: cout<< entry->name << ", " << entry->type << endl;
         if (entry->name == "main" && entry->type == "function") {
             functions* mainFunc = static_cast<functions*>(entry);
+            //for tests: cout << entry->name << ", " << entry->type << mainFunc->ret_type << endl;
             if (mainFunc->ret_type == "void") {
                 mainFound = true;
+                //for tests: cout << "'main' function found in global scope" << endl;
                 break;
             }
         }
     }
 
     if (!mainFound) {
-        output::errorMismatch(0);  // Using a general error, with line number 0 for global scope
-        exit(0);
+        //for tests: cout << "Error: No 'main' function found in global scope" << endl;
+
+        // output::errorMismatch(0);  // Using a general error, with line number 0 for global scope
+        // exit(0);
     }
 }
 
@@ -251,22 +257,21 @@ void exitScope(TablesStack& tableStack) {
         for (const auto& entry : scopeToDelete->scope) {
             if (entry->type == "function") {
                 functions* func = static_cast<functions*>(entry);
-                std::ostringstream argTypes;
+                std::string argTypes;
                 for (size_t i = 0; i < func->all_arg.size(); ++i) {
-                    if (i > 0) argTypes << ",";
-                    argTypes << func->all_arg[i];
+                    if (i > 0) argTypes += ",";
+                    argTypes += toUpper(func->all_arg[i]);
                 }
-                string functionType = output::makeFunctionType(argTypes.str(), func->ret_type);
+                string functionType = output::makeFunctionType(argTypes, toUpper(func->ret_type));
                 output::printID(func->name, func->offset, functionType);
             } else {
-                output::printID(entry->name, entry->offset, entry->type);
+                output::printID(entry->name, entry->offset, toUpper(entry->type));
             }
         }
 
         delete scopeToDelete;
     }
 }
-
 void addFunctionToGlobalScope(TablesStack& tableStack, const string& name, const string& returnType, const vector<string>& paramTypes) {
     if (!tableStack.stackTable.empty()) {
         ScopeBlock* globalScope = tableStack.ParentScope;
@@ -292,14 +297,24 @@ void checkFunctionDeclaration(TablesStack& tableStack, const string& name, int l
     // If we reach here, the function declaration is valid
 }
 void checkAssignment(const string& lhsType, const string& rhsType, int lineno) {
-    cout << "Debug: Checking assignment at line " << lineno << " with lhsType: " << lhsType << " and rhsType: " << rhsType << endl;
+    //for tests: cout << "Debug: Checking assignment at line " << lineno << " with lhsType: " << lhsType << " and rhsType: " << rhsType << endl;
     if (!isTypeCompatible(lhsType, rhsType)) {
+        //for tests: cout << "checkAssignment:" << lhsType << ", " << rhsType << endl;
         output::errorMismatch(lineno);
         exit(0);
     }
     // If we reach here, the assignment is valid
 }
-void checkFunctionCall(TablesStack& tableStack, const string& funcName, const vector<string>& argTypes, int lineno) {
+
+string formatArgTypes(const vector<string>& argTypes) {
+    string result;
+    for (size_t i = 0; i < argTypes.size(); ++i) {
+        if (i > 0) result += ",";
+        result += toUpper(argTypes[i]);
+    }
+    return result;
+}
+ExpNode* checkFunctionCall(TablesStack& tableStack, const string& funcName, const vector<string>& argTypes, int lineno) {
     string funcType = getSymbolType(tableStack, funcName);
     if (funcType.empty()) {
         output::errorUndefFunc(lineno, funcName);
@@ -322,7 +337,7 @@ void checkFunctionCall(TablesStack& tableStack, const string& funcName, const ve
 
     functions* func = static_cast<functions*>(entry);
 
-    // Check if the argument type matches one of the function's parameter types
+    // Check if the argument types match
     bool matchFound = false;
     for (const auto& paramType : func->all_arg) {
         if (isTypeCompatible(paramType, argTypes[0])) {
@@ -332,9 +347,13 @@ void checkFunctionCall(TablesStack& tableStack, const string& funcName, const ve
     }
 
     if (!matchFound) {
-        output::errorPrototypeMismatch(lineno, funcName, output::makeFunctionType(func->all_arg[0], func->ret_type));
+        string expectedArgType = toUpper(func->all_arg[0]);  // Use the expected type from the function definition
+        output::errorPrototypeMismatch(lineno, funcName, expectedArgType);
         exit(0);
     }
+
+    // If we get here, the call is valid
+    return new ExpNode(func->ret_type);
 }
 
 void checkReturnStatement(TablesStack& tableStack, const string& returnType, int lineno) {
