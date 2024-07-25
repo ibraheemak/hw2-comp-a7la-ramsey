@@ -15,6 +15,7 @@
     offsetStack* offsettStack=new offsetStack;
     #define YYERROR_VERBOSE 1 
     /* //for tests:  #define YYDEBUG 1 */
+    string global_exp_type = "";
 %}
 
 
@@ -120,19 +121,19 @@ Statement: LBRACE M_NEW_SCOPE Statements RBRACE
            checkReturnStatement(*tableStack, "void", yylineno);
            printProductionRule(9);
          }
-         | IF LPAREN Exp RPAREN{checkBooleanExpression($3,*tableStack);} M_NEW_SCOPE Statement CLOSE_SCOPE
+         | IF LPAREN Exp RPAREN M_CHECK_IF_BOOL M_NEW_SCOPE Statement CLOSE_SCOPE
          {
          
            printProductionRule(10);
            delete $3;
            
          }
-         | IF LPAREN Exp RPAREN{checkBooleanExpression($3,*tableStack);} M_NEW_SCOPE Statement CLOSE_SCOPE ELSE M_NEW_SCOPE Statement CLOSE_SCOPE
+         | IF LPAREN Exp RPAREN M_CHECK_IF_BOOL M_NEW_SCOPE Statement CLOSE_SCOPE ELSE M_NEW_SCOPE Statement CLOSE_SCOPE
          {
            printProductionRule(11);
            delete $3;
          }
-         | WHILE LPAREN Exp RPAREN {checkBooleanExpression($3,*tableStack);} M_NEW_SCOPE_LOOP Statement
+         | WHILE LPAREN Exp RPAREN M_CHECK_IF_BOOL M_NEW_SCOPE_LOOP Statement
          {
            exitScope(*tableStack);
            offsettStack->pop_offset(yylineno);
@@ -171,7 +172,13 @@ M_NEW_SCOPE_LOOP: %empty
                   loopDepth++;
                 }
                 ;
-
+M_CHECK_IF_BOOL: %empty
+                {
+                  if (!isBooleanType(global_exp_type)) {
+                   output::errorMismatch(yylineno);
+                   exit(0);
+                  }
+                };
 //////////////////////////////////////////////////////////////////////////////////
 
 Call: ID LPAREN Exp RPAREN
@@ -242,7 +249,7 @@ Type: INT { $$=new TNode("int"); printProductionRule(16); }
     | BOOL { $$=new TNode("bool"); printProductionRule(18); };
 
 
-Exp: LPAREN Exp RPAREN { $$ = $2; printProductionRule(19);}
+Exp: LPAREN Exp RPAREN { $$ = $2; printProductionRule(19); global_exp_type=$$->type;}
    | Exp additive Exp 
      { 
        checkNumericExpression($1, *tableStack);
@@ -252,6 +259,7 @@ Exp: LPAREN Exp RPAREN { $$ = $2; printProductionRule(19);}
        //for tests: cout << type1 <<endl;
        $$ = new ExpNode(type1 == "int" || type2 == "int" ? "int" : "byte");
        printProductionRule(20);
+       global_exp_type=$$->type;
      }
    | Exp multiplicative Exp 
      { 
@@ -261,6 +269,7 @@ Exp: LPAREN Exp RPAREN { $$ = $2; printProductionRule(19);}
        string type2 = $3->type;
        $$ = new ExpNode(type1 == "int" || type2 == "int" ? "int" : "byte");
        printProductionRule(20);
+       global_exp_type=$$->type;
      }
    | ID 
      { 
@@ -271,9 +280,10 @@ Exp: LPAREN Exp RPAREN { $$ = $2; printProductionRule(19);}
        }
        $$ = new ExpNode(type);
        printProductionRule(21);
+       global_exp_type=$$->type;
      }
-   | Call { $$ = $1; printProductionRule(22);  }
-   | NUM { $$ = new ExpNode("int"); printProductionRule(23);}
+   | Call { $$ = $1; printProductionRule(22);global_exp_type=$$->type;}
+   | NUM { $$ = new ExpNode("int"); printProductionRule(23);global_exp_type=$$->type;}
    | NUM B 
      { 
        int value = static_cast<Num*>($1)->num;
@@ -283,15 +293,17 @@ Exp: LPAREN Exp RPAREN { $$ = $2; printProductionRule(19);}
        }
        $$ = new ExpNode("byte");
        printProductionRule(24);
+       global_exp_type=$$->type;
      }
-   | STRING { $$ = new ExpNode("string");printProductionRule(25); }
-   | TRUE { $$ = new ExpNode("bool"); }
-   | FALSE { $$ = new ExpNode("bool"); }
+   | STRING { $$ = new ExpNode("string");printProductionRule(25); global_exp_type=$$->type;}
+   | TRUE { $$ = new ExpNode("bool"); global_exp_type=$$->type;}
+   | FALSE { $$ = new ExpNode("bool"); global_exp_type=$$->type;}
    | NOT Exp 
      { 
        checkBooleanExpression($2, *tableStack);
        $$ = new ExpNode("bool");
        printProductionRule(28);
+       global_exp_type=$$->type;
      }
    | Exp AND Exp 
      { 
@@ -299,6 +311,7 @@ Exp: LPAREN Exp RPAREN { $$ = $2; printProductionRule(19);}
        checkBooleanExpression($3, *tableStack);
        $$ = new ExpNode("bool");
        printProductionRule(29);
+       global_exp_type=$$->type;
      }
    | Exp OR Exp 
      { 
@@ -306,12 +319,14 @@ Exp: LPAREN Exp RPAREN { $$ = $2; printProductionRule(19);}
        checkBooleanExpression($3, *tableStack);
        $$ = new ExpNode("bool");
        printProductionRule(30);
+       global_exp_type=$$->type;
      }
    | Exp equality Exp 
      { 
        checkTypeMismatch($1->type, $3->type, "equality", yylineno);
        $$ = new ExpNode("bool");
        printProductionRule(31);
+       global_exp_type=$$->type;
      }
    | Exp relational Exp 
      { 
@@ -319,6 +334,7 @@ Exp: LPAREN Exp RPAREN { $$ = $2; printProductionRule(19);}
        checkNumericExpression($3, *tableStack);
        $$ = new ExpNode("bool");
        printProductionRule(31);
+       global_exp_type=$$->type;
      }
    | LPAREN Type RPAREN Exp 
      { 
@@ -329,6 +345,7 @@ Exp: LPAREN Exp RPAREN { $$ = $2; printProductionRule(19);}
        }
        $$ = new ExpNode(targetType);
        printProductionRule(32);
+       global_exp_type=$$->type;
      }
    ;
     // Exp: LPAREN Exp RPAREN{printProductionRule(19);}
