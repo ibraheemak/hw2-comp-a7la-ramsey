@@ -2,7 +2,7 @@
 #include "source.hpp"
 #include "parser.tab.hpp"
 #include "hw3_output.hpp"
-
+int parenthesis_depth = 0;
 %}
 
 %option noyywrap
@@ -29,9 +29,10 @@ while       return WHILE;
 break       return BREAK;
 continue    return CONTINUE;
 ;           return SC;
-,           return COMMA;
-\(          return LPAREN;
-\)          return RPAREN;
+"("             { parenthesis_depth++; return LPAREN; }
+")"             { if (parenthesis_depth > 0) parenthesis_depth--; return RPAREN; }
+","             { if (parenthesis_depth > 0) { output::errorLex(yylineno); exit(0); } 
+                  else return COMMA; }
 \{          return LBRACE;
 \}          return RBRACE;
 =           return ASSIGN;
