@@ -19,7 +19,7 @@
 
 
 
-%token INT BYTE B BOOL  TRUE FALSE RETURN IF  WHILE BREAK CONTINUE SC LBRACE RBRACE ID NUM STRING
+%nonassoc INT BYTE B BOOL  TRUE FALSE RETURN IF  WHILE BREAK CONTINUE SC LBRACE RBRACE ID NUM STRING
 %right ASSIGN
 %left OR
 %left AND
@@ -120,35 +120,20 @@ Statement: LBRACE M_NEW_SCOPE Statements RBRACE
            checkReturnStatement(*tableStack, "void", yylineno);
            printProductionRule(9);
          }
-         | IF LPAREN Exp RPAREN M_NEW_SCOPE Statement CLOSE_SCOPE
+         | IF LPAREN Exp RPAREN{checkBooleanExpression($3,*tableStack);} M_NEW_SCOPE Statement CLOSE_SCOPE
          {
-           string expType = getExpressionType($3, *tableStack);
-           if (!isBooleanType(expType)) {
-             output::errorMismatch(yylineno);
-             exit(0);
-           }
-
+         
            printProductionRule(10);
            delete $3;
            
          }
-         | IF LPAREN Exp RPAREN M_NEW_SCOPE Statement CLOSE_SCOPE ELSE M_NEW_SCOPE Statement CLOSE_SCOPE
+         | IF LPAREN Exp RPAREN{checkBooleanExpression($3,*tableStack);} M_NEW_SCOPE Statement CLOSE_SCOPE ELSE M_NEW_SCOPE Statement CLOSE_SCOPE
          {
-           string expType = getExpressionType($3, *tableStack);
-           if (!isBooleanType(expType)) {
-             output::errorMismatch(yylineno);
-             exit(0);
-           }
            printProductionRule(11);
            delete $3;
          }
-         | WHILE LPAREN Exp RPAREN M_NEW_SCOPE_LOOP Statement
+         | WHILE LPAREN Exp RPAREN {checkBooleanExpression($3,*tableStack);} M_NEW_SCOPE_LOOP Statement
          {
-           string expType = getExpressionType($3, *tableStack);
-           if (!isBooleanType(expType)) {
-             output::errorMismatch(yylineno);
-             exit(0);
-           }
            exitScope(*tableStack);
            offsettStack->pop_offset(yylineno);
            loopDepth--;
@@ -186,6 +171,7 @@ M_NEW_SCOPE_LOOP: %empty
                   loopDepth++;
                 }
                 ;
+
 //////////////////////////////////////////////////////////////////////////////////
 
 Call: ID LPAREN Exp RPAREN
@@ -279,7 +265,7 @@ Exp: LPAREN Exp RPAREN { $$ = $2; printProductionRule(19);}
    | ID 
      { 
        string type = getSymbolType(*tableStack, static_cast<IdentifierStr*>($1)->id);
-       if(type.empty()) {
+       if(type.empty()||type=="function") { //check
          output::errorUndef(yylineno, static_cast<IdentifierStr*>($1)->id);
          exit(0);
        }

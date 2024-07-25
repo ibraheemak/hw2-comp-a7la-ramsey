@@ -198,10 +198,13 @@ void addVariableToScope(TablesStack& tables, const string& name, const string& t
 bool isSymbolDefinedInCurrentScope(TablesStack& tableStack, const string& name) {
     if (!tableStack.stackTable.empty()) {
         ScopeBlock* currentScope = tableStack.stackTable.back();
+        while(currentScope!=nullptr){
         for (const auto& entry : currentScope->scope) {
             if (entry->name == name) {
                 return true;
             }
+        }
+        currentScope=currentScope->parent;
         }
     }
     return false;

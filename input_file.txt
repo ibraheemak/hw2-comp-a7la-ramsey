@@ -1,3 +1,2 @@
-if (true){int q;}
-;;
-if (true){int q;}
+while(1)
+int x=5;
